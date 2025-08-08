@@ -1,9 +1,21 @@
+// src-ts/components/timer/AudioManager.ts
 export class AudioManager {
   private audioContext: AudioContext | null = null;
 
   private initAudio(): void {
     if (!this.audioContext) {
       this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+  }
+
+  public async unlock(): Promise<void> {
+    this.initAudio();
+    if (this.audioContext && this.audioContext.state !== 'running') {
+      try {
+        await this.audioContext.resume();
+      } catch (_) {
+        // Ignore resume errors; will attempt again on next interaction
+      }
     }
   }
 

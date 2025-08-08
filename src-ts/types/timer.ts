@@ -1,3 +1,4 @@
+// src-ts/types/timer.ts
 export interface TimerState {
   currentSet: number;
   timeRemaining: number;
@@ -10,7 +11,6 @@ export interface TimerState {
   warmUpDuration: number;
   restEnabled: boolean;
   restDuration: number;
-  hasPlayedWarning: boolean;
 }
 
 export interface TimerConfig {

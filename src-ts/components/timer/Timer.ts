@@ -1,5 +1,5 @@
 // src-ts/components/timer/Timer.ts
-import type { TimerState, TimerConfig, TimerEventType } from '../../types/timer.js';
+import type { TimerState, TimerConfig } from '../../types/timer.js';
 import { AudioManager } from './AudioManager.js';
 import { TimerDisplayController } from './TimerDisplay.js';
 
@@ -23,8 +23,7 @@ export class Timer {
       warmUpEnabled: false,
       warmUpDuration: 10,
       restEnabled: false,
-      restDuration: 5,
-      hasPlayedWarning: false
+      restDuration: 5
     };
     
     this.audioManager = new AudioManager();
@@ -48,8 +47,7 @@ export class Timer {
       restDuration: config.restDuration,
       currentSet: 0,
       isRunning: true,
-      isRest: false,
-      hasPlayedWarning: false
+      isRest: false
     };
 
     this.countdownBeeps.clear();
@@ -66,7 +64,11 @@ export class Timer {
     this.showTimerSection();
     this.display.updateDisplay(this.state, this.activeExcerciseNames);
 
-    document.addEventListener("click", () => {}, { once: true });
+    const unlock = () => {
+      this.audioManager.unlock();
+      document.removeEventListener('click', unlock);
+    };
+    document.addEventListener('click', unlock, { once: true });
 
     this.timerInterval = window.setInterval(() => {
       this.tick();
@@ -115,14 +117,12 @@ export class Timer {
       if (this.state.restEnabled && this.state.currentSet < this.state.totalSets) {
         this.state.isRest = true;
         this.state.timeRemaining = this.state.restDuration;
-        this.state.hasPlayedWarning = false;
         this.countdownBeeps.clear();
         this.display.showSetComplete();
       } else {
         // No rest, go directly to next set
         this.state.currentSet++;
         this.state.timeRemaining = this.state.setDuration;
-        this.state.hasPlayedWarning = false;
         this.countdownBeeps.clear();
         this.display.showSetComplete();
       }
@@ -136,7 +136,6 @@ export class Timer {
     this.state.isRest = false;
     this.state.currentSet++;
     this.state.timeRemaining = this.state.setDuration;
-    this.state.hasPlayedWarning = false;
     this.countdownBeeps.clear();
   }
 
@@ -167,8 +166,7 @@ export class Timer {
       isWarmUp: false,
       isRest: false,
       currentSet: 0,
-      timeRemaining: 0,
-      hasPlayedWarning: false
+      timeRemaining: 0
     };
     
     this.countdownBeeps.clear();
