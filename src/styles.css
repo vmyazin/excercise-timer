@@ -1,5 +1,8 @@
 /* excercise-timer/src/styles.css */
 
+
+/* Reset and base styles */
+
 * {
     margin: 0;
     padding: 0;
@@ -11,163 +14,345 @@
     -webkit-touch-callout: none;
 }
 
+
+/* Root variables for macOS design system */
+
+:root {
+    /* Typography */
+    --font-system: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+    /* Colors - Light mode */
+    --bg-primary: #f5f5f7;
+    --bg-secondary: rgba(255, 255, 255, 0.8);
+    --bg-tertiary: rgba(255, 255, 255, 0.6);
+    --text-primary: #1d1d1f;
+    --text-secondary: #86868b;
+    --text-tertiary: #515154;
+    /* Accent colors */
+    --accent-blue: #007aff;
+    --accent-green: #34c759;
+    --accent-red: #ff3b30;
+    --accent-orange: #ff9500;
+    --accent-purple: #af52de;
+    /* Shadows */
+    --shadow-small: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.12);
+    --shadow-medium: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-large: 0 10px 20px rgba(0, 0, 0, 0.08), 0 5px 10px rgba(0, 0, 0, 0.04);
+    /* Transitions */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-medium: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: var(--font-system);
+    background: var(--bg-primary);
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
+
+/* Main container with macOS window style */
+
 .container.exercise-container {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    max-width: 500px;
+    background: var(--bg-secondary);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 12px;
+    padding: 20px 24px;
+    box-shadow: var(--shadow-large);
+    max-width: 480px;
+    width: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+
+/* App header */
+
+.app-header {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+
+/* Main content area */
+
+.app-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+
+/* Form group container */
+
+.form-group {
+    background: rgba(0, 0, 0, 0.02);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+
+/* Timer section */
+
+.timer-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+/* Timer content wrapper */
+
+.timer-content {
     width: 100%;
 }
 
+
+/* Progress container */
+
+.progress-container {
+    padding: 0 8px;
+    margin: 8px 0;
+}
+
+
+/* Typography */
+
 h1 {
     text-align: center;
-    color: #333;
-    margin-bottom: 30px;
-    font-size: 2rem;
-    font-weight: 300;
+    color: var(--text-primary);
+    margin-bottom: 0;
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
 }
 
 
-/* 🫣 new component container for the exercise timer */
-
-.exercise-container {
-    /* human-readable class name already added */
-}
+/* Setup section */
 
 .setup-section {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
+
+
+/* Input groups with macOS styling */
 
 .input-group {
     display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
+    gap: 12px;
+    margin-bottom: 12px;
     align-items: center;
+}
+
+.input-group:last-child {
+    margin-bottom: 0;
 }
 
 label {
     font-weight: 500;
-    color: #555;
-    min-width: 120px;
+    color: var(--text-secondary);
+    min-width: 160px;
+    font-size: 16px;
 }
+
+
+/* macOS-style input fields */
 
 input[type="number"] {
     flex: 1;
-    padding: 12px;
-    border: 2px solid #e0e0e0;
-    border-radius: 10px;
+    padding: 10px 14px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
     font-size: 16px;
-    transition: border-color 0.3s ease;
+    background: white;
+    transition: all var(--transition-fast);
+    font-family: var(--font-system);
+}
+
+input[type="number"]:hover {
+    border-color: rgba(0, 0, 0, 0.25);
 }
 
 input[type="number"]:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
 }
+
+
+/* macOS-style buttons */
 
 .button {
     width: 100%;
-    padding: 15px;
+    padding: 10px 20px;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     font-size: 18px;
-    font-weight: 600;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    transition: all var(--transition-fast);
+    font-family: var(--font-system);
+    position: relative;
+    overflow: hidden;
+    min-height: 44px;
 }
 
+
+/* Button text for better alignment */
+
+.button-text {
+    display: inline-block;
+    position: relative;
+    z-index: 1;
+}
+
+
+/* Button active state effect */
+
+.button:active .button-text {
+    transform: translateY(0.5px);
+}
+
+
+/* Primary button (Start) */
+
 .start-btn {
-    background: linear-gradient(45deg, #4CAF50, #45a049);
+    background: var(--accent-blue);
     color: white;
-    margin-bottom: 15px;
+    margin-bottom: 0;
 }
 
 .start-btn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(76, 175, 80, 0.3);
+    background: #0051d5;
+    box-shadow: var(--shadow-medium);
+}
+
+.start-btn:active:not(:disabled) {
+    transform: scale(0.98);
 }
 
 .start-btn:disabled {
-    background: #ccc;
+    background: #e0e0e2;
+    color: #8e8e93;
     cursor: not-allowed;
 }
 
+
+/* Secondary button (Stop) */
+
 .stop-btn {
-    background: linear-gradient(45deg, #f44336, #d32f2f);
+    background: var(--accent-red);
     color: white;
 }
 
 .stop-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(244, 67, 54, 0.3);
+    background: #d70015;
+    box-shadow: var(--shadow-medium);
 }
+
+.stop-btn:active {
+    transform: scale(0.98);
+}
+
+
+/* Timer display with macOS card style */
 
 .timer-display {
     text-align: center;
-    margin: 30px 0;
-    padding: 30px;
-    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
-    border-radius: 15px;
-    min-height: 150px;
+    margin: 16px 0;
+    padding: 24px;
+    background: white;
+    border-radius: 10px;
+    min-height: 160px;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    box-shadow: var(--shadow-small);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: all var(--transition-medium);
 }
+
+
+/* Timer display hover effect */
+
+.timer-display:hover {
+    box-shadow: var(--shadow-medium);
+}
+
+
+/* Current step indicator */
 
 .current-step {
-    font-size: 3rem;
-    color: #333;
-    margin-bottom: 10px;
-    font-weight: 700;
+    font-size: 24px;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
 }
+
+
+/* Time display with SF Mono */
 
 .time-display {
-    font-size: 4rem;
+    font-size: 56px;
     font-weight: 300;
-    color: #333;
-    margin: 10px 0;
-    font-family: 'Courier New', monospace;
+    color: var(--text-primary);
+    margin: 8px 0;
+    font-family: var(--font-mono);
+    letter-spacing: -1px;
+    font-variant-numeric: tabular-nums;
+    transition: color var(--transition-fast);
 }
 
+
+/* Progress info text */
+
 .progress-info {
-    font-size: 1rem;
-    color: #666;
-    margin-top: 10px;
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-top: 8px;
 }
+
+
+/* macOS-style progress bar */
 
 .progress-bar {
     width: 100%;
-    height: 8px;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 4px;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
     overflow: hidden;
-    margin: 15px 0;
+    margin: 12px 0;
 }
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #667eea, #764ba2);
-    border-radius: 4px;
+    background: var(--accent-blue);
+    border-radius: 3px;
     transition: width 0.1s linear;
     width: 0%;
 }
 
+
+/* Warning state animation */
+
 .warning {
-    animation: pulse 0.5s infinite alternate;
+    animation: pulse 0.5s ease-in-out infinite alternate;
+}
+
+.warning .time-display {
+    color: var(--accent-orange);
 }
 
 @keyframes pulse {
@@ -175,108 +360,41 @@ input[type="number"]:focus {
         transform: scale(1);
     }
     to {
-        transform: scale(1.05);
+        transform: scale(1.02);
     }
 }
+
+
+/* Hidden state */
 
 .hidden {
     display: none;
 }
 
+
+/* Timer states with macOS colors */
+
 .step-complete {
-    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%) !important;
+    background: linear-gradient(135deg, #e3f2e7 0%, #d4e8d9 100%) !important;
+    border-color: rgba(52, 199, 89, 0.2) !important;
 }
 
 .warm-up {
-    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%) !important;
+    background: linear-gradient(135deg, #fff5e6 0%, #ffedd6 100%) !important;
+    border-color: rgba(255, 149, 0, 0.2) !important;
 }
 
 .all-complete {
-    background: linear-gradient(135deg, #96fbc4 0%, #f9f047 100%) !important;
+    background: linear-gradient(135deg, #e6f4ea 0%, #d6edd9 100%) !important;
+    border-color: rgba(52, 199, 89, 0.3) !important;
 }
 
-.logo.vanilla:hover {
-    filter: drop-shadow(0 0 2em #ffe21c);
-}
-
-:root {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
-    font-size: 16px;
-    line-height: 24px;
-    font-weight: 400;
-    color: #0f0f0f;
-    background-color: #f6f6f6;
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-text-size-adjust: 100%;
-}
-
-.logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: 0.75s;
-}
-
-.logo.tauri:hover {
-    filter: drop-shadow(0 0 2em #24c8db);
-}
-
-.row {
-    display: flex;
-    justify-content: center;
-}
-
-a {
-    font-weight: 500;
-    color: #646cff;
-    text-decoration: inherit;
-}
-
-a:hover {
-    color: #535bf2;
-}
-
-input,
-button {
-    border-radius: 8px;
-    border: 1px solid transparent;
-    padding: 0.6em 1.2em;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
-    color: #0f0f0f;
-    background-color: #ffffff;
-    transition: border-color 0.25s;
-    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
-}
-
-button {
-    cursor: pointer;
-}
-
-button:hover {
-    border-color: #396cd8;
-}
-
-button:active {
-    border-color: #396cd8;
-    background-color: #e8e8e8;
-}
-
-input,
-button {
-    outline: none;
-}
-
-#greet-input {
-    margin-right: 5px;
+.all-complete .current-step {
+    color: var(--accent-green);
 }
 
 
-/* Allow selection inside form fields for usability */
+/* Allow selection inside form fields */
 
 input,
 textarea {
@@ -287,20 +405,129 @@ textarea {
     -webkit-touch-callout: default;
 }
 
+
+/* Dark mode support */
+
 @media (prefers-color-scheme: dark) {
      :root {
-        color: #f6f6f6;
-        background-color: #2f2f2f;
+        --bg-primary: #000000;
+        --bg-secondary: rgba(30, 30, 30, 0.8);
+        --bg-tertiary: rgba(40, 40, 40, 0.6);
+        --text-primary: #f5f5f7;
+        --text-secondary: #a1a1a6;
+        --text-tertiary: #8e8e93;
+        --accent-blue: #0a84ff;
+        --accent-green: #30d158;
+        --accent-red: #ff453a;
+        --accent-orange: #ff9f0a;
+        --accent-purple: #bf5af2;
+        --shadow-small: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.4);
+        --shadow-medium: 0 4px 6px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+        --shadow-large: 0 10px 20px rgba(0, 0, 0, 0.4), 0 5px 10px rgba(0, 0, 0, 0.3);
     }
-    a:hover {
-        color: #24c8db;
+    .container.exercise-container {
+        background: var(--bg-secondary);
+        border-color: rgba(255, 255, 255, 0.1);
     }
-    input,
-    button {
-        color: #ffffff;
-        background-color: #0f0f0f98;
+    .app-header {
+        border-bottom-color: rgba(255, 255, 255, 0.06);
     }
-    button:active {
-        background-color: #0f0f0f69;
+    .form-group {
+        background: rgba(255, 255, 255, 0.02);
     }
+    input[type="number"] {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+    }
+    input[type="number"]:focus {
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.3);
+    }
+    .timer-display {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    .progress-bar {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    .step-complete {
+        background: linear-gradient(135deg, rgba(48, 209, 88, 0.1) 0%, rgba(48, 209, 88, 0.15) 100%) !important;
+        border-color: rgba(48, 209, 88, 0.3) !important;
+    }
+    .warm-up {
+        background: linear-gradient(135deg, rgba(255, 159, 10, 0.1) 0%, rgba(255, 159, 10, 0.15) 100%) !important;
+        border-color: rgba(255, 159, 10, 0.3) !important;
+    }
+    .all-complete {
+        background: linear-gradient(135deg, rgba(48, 209, 88, 0.15) 0%, rgba(48, 209, 88, 0.2) 100%) !important;
+        border-color: rgba(48, 209, 88, 0.4) !important;
+    }
+}
+
+
+/* Responsive adjustments */
+
+@media (max-width: 480px) {
+    .container.exercise-container {
+        padding: 16px;
+    }
+    h1 {
+        font-size: 24px;
+    }
+    .time-display {
+        font-size: 48px;
+    }
+    .current-step {
+        font-size: 20px;
+    }
+    .button {
+        padding: 10px 16px;
+        font-size: 16px;
+        min-height: 40px;
+    }
+    .timer-display {
+        padding: 20px;
+        min-height: 140px;
+    }
+    .input-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    label {
+        min-width: unset;
+        margin-bottom: 4px;
+    }
+}
+
+
+/* Add subtle entrance animation */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.container.exercise-container {
+    animation: fadeInUp 0.4s ease-out;
+}
+
+
+/* Smooth number transitions */
+
+.time-display {
+    font-size: 48px;
+    font-weight: 300;
+    color: var(--text-primary);
+    margin: 12px 0;
+    font-family: var(--font-mono);
+    letter-spacing: -1px;
+    font-variant-numeric: tabular-nums;
+    transition: color var(--transition-fast);
 }
