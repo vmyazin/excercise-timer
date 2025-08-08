@@ -82,8 +82,8 @@ export class FormController {
       return false;
     }
     
-    if (config.warmUpEnabled && (config.warmUpDuration < 3 || config.warmUpDuration > 30)) {
-      alert("Warm-up duration must be between 3 and 30 seconds");
+    if (config.warmUpEnabled && (config.warmUpDuration < 5 || config.warmUpDuration > 30)) {
+      alert("Warm-up duration must be between 5 and 30 seconds");
       return false;
     }
     
