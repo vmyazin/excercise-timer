@@ -247,9 +247,9 @@ input[type="number"]:focus {
     justify-content: center;
     transition: all var(--transition-fast);
     user-select: none;
-    font-size: 14px;
+    font-size: 18px;
     font-weight: 600;
-    color: var(--text-secondary);
+    color: var(--text-primary);
 }
 
 .control-btn:hover {
@@ -325,12 +325,6 @@ input[type="number"]:focus {
     border: solid white;
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
-}
-
-.checkbox-text {
-    font-size: 16px;
-    color: var(--text-primary);
-    font-weight: 400;
 }
 
 .warmup-duration {
