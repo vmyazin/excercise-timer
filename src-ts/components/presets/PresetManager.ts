@@ -25,7 +25,9 @@ export class PresetManager {
           "Glute bridge",
           "Toe touch to overhead reach (hamstring to extension)",
           "Standing hip openers (slow knee circles)"
-        ]
+        ],
+        restEnabled: true,
+        restDuration: 5
       }
     };
   }
@@ -71,9 +73,33 @@ export class PresetManager {
     this.state.activeMode = mode;
     
     if (mode === "presetWorkout" && this.presetWorkouts.presetWorkout) {
-      this.state.activeExcerciseNames = [...this.presetWorkouts.presetWorkout.excercises];
+      const preset = this.presetWorkouts.presetWorkout;
+      this.state.activeExcerciseNames = [...preset.excercises];
+      
       if (stepsInput) {
         stepsInput.value = String(this.state.activeExcerciseNames.length);
+      }
+      
+      // Apply preset rest configuration if available
+      if (preset.restEnabled !== undefined) {
+        const enableRestCheckbox = document.getElementById("enableRest") as HTMLInputElement;
+        const restDurationInput = document.getElementById("restDuration") as HTMLInputElement;
+        const restDurationWrapper = document.querySelector(".rest-duration-wrapper") as HTMLElement;
+        
+        if (enableRestCheckbox) {
+          enableRestCheckbox.checked = preset.restEnabled;
+          
+          // Update visibility of rest duration input
+          if (preset.restEnabled) {
+            restDurationWrapper?.classList.remove("hidden");
+          } else {
+            restDurationWrapper?.classList.add("hidden");
+          }
+        }
+        
+        if (restDurationInput && preset.restDuration) {
+          restDurationInput.value = String(preset.restDuration);
+        }
       }
     } else {
       this.state.activeExcerciseNames = null;

@@ -18,8 +18,11 @@ export class Timer {
       stepDuration: 0,
       isRunning: false,
       isWarmUp: false,
+      isRest: false,
       warmUpEnabled: false,
-      warmUpDuration: 5,
+      warmUpDuration: 10,
+      restEnabled: false,
+      restDuration: 5,
       hasPlayedWarning: false
     };
     
@@ -40,8 +43,11 @@ export class Timer {
       stepDuration: config.duration,
       warmUpEnabled: config.warmUpEnabled,
       warmUpDuration: config.warmUpDuration,
+      restEnabled: config.restEnabled,
+      restDuration: config.restDuration,
       currentStep: 0,
       isRunning: true,
+      isRest: false,
       hasPlayedWarning: false
     };
 
@@ -80,6 +86,8 @@ export class Timer {
     if (this.state.timeRemaining <= 0) {
       if (this.state.isWarmUp) {
         this.completeWarmUp();
+      } else if (this.state.isRest) {
+        this.completeRest();
       } else {
         this.completeStep();
       }
@@ -102,15 +110,33 @@ export class Timer {
     this.audioManager.playStepComplete();
 
     if (this.state.currentStep < this.state.totalSteps) {
-      this.state.currentStep++;
-      this.state.timeRemaining = this.state.stepDuration;
-      this.state.hasPlayedWarning = false;
-      this.countdownBeeps.clear();
-
-      this.display.showStepComplete();
+      // Check if we should start a rest period
+      if (this.state.restEnabled && this.state.currentStep < this.state.totalSteps) {
+        this.state.isRest = true;
+        this.state.timeRemaining = this.state.restDuration;
+        this.state.hasPlayedWarning = false;
+        this.countdownBeeps.clear();
+        this.display.showStepComplete();
+      } else {
+        // No rest, go directly to next step
+        this.state.currentStep++;
+        this.state.timeRemaining = this.state.stepDuration;
+        this.state.hasPlayedWarning = false;
+        this.countdownBeeps.clear();
+        this.display.showStepComplete();
+      }
     } else {
       this.complete();
     }
+  }
+
+  private completeRest(): void {
+    this.audioManager.playStepComplete();
+    this.state.isRest = false;
+    this.state.currentStep++;
+    this.state.timeRemaining = this.state.stepDuration;
+    this.state.hasPlayedWarning = false;
+    this.countdownBeeps.clear();
   }
 
   private complete(): void {
@@ -139,6 +165,7 @@ export class Timer {
       ...this.state,
       isRunning: false,
       isWarmUp: false,
+      isRest: false,
       currentStep: 0,
       timeRemaining: 0,
       hasPlayedWarning: false

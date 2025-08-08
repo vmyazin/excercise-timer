@@ -42,6 +42,15 @@ export class TimerDisplayController {
       currentStep = "Warm Up";
       progressInfo = "Get ready to start!";
       this.timerDisplayEl.classList.add("warm-up");
+      this.timerDisplayEl.classList.remove("rest");
+    } else if (state.isRest) {
+      currentStep = "Rest";
+      const nextStepNum = state.currentStep + 1;
+      const nextExcerciseName = this.getNextExcerciseName(state, activeExcerciseNames);
+      const nextStepDisplay = nextExcerciseName ? nextExcerciseName : `Step ${nextStepNum}`;
+      progressInfo = `Next: ${nextStepDisplay}`;
+      this.timerDisplayEl.classList.add("rest");
+      this.timerDisplayEl.classList.remove("warm-up");
     } else {
       const excerciseName = this.getCurrentExcerciseName(state, activeExcerciseNames);
       currentStep = excerciseName ? excerciseName : `Step ${state.currentStep} of ${state.totalSteps}`;
@@ -50,12 +59,14 @@ export class TimerDisplayController {
       const suffix = activeExcerciseNames && !excerciseName ? " (custom)" : "";
       progressInfo = `${remainingSteps} steps remaining${suffix}`;
       
-      this.timerDisplayEl.classList.remove("warm-up");
+      this.timerDisplayEl.classList.remove("warm-up", "rest");
     }
 
     let progressPercent: number;
     if (state.isWarmUp) {
       progressPercent = ((state.warmUpDuration - state.timeRemaining) / state.warmUpDuration) * 100;
+    } else if (state.isRest) {
+      progressPercent = ((state.restDuration - state.timeRemaining) / state.restDuration) * 100;
     } else {
       progressPercent = ((state.stepDuration - state.timeRemaining) / state.stepDuration) * 100;
     }
@@ -64,11 +75,21 @@ export class TimerDisplayController {
   }
 
   private getCurrentExcerciseName(state: TimerState, activeExcerciseNames: string[] | null): string | null {
-    if (!activeExcerciseNames || state.isWarmUp || state.currentStep <= 0) return null;
+    if (!activeExcerciseNames || state.isWarmUp || state.isRest || state.currentStep <= 0) return null;
     
     const index = state.currentStep - 1;
     if (index >= 0 && index < activeExcerciseNames.length) {
       return activeExcerciseNames[index];
+    }
+    return null;
+  }
+
+  private getNextExcerciseName(state: TimerState, activeExcerciseNames: string[] | null): string | null {
+    if (!activeExcerciseNames || state.currentStep < 0) return null;
+    
+    const nextIndex = state.currentStep; // currentStep is the step we just completed, so next is currentStep (0-indexed)
+    if (nextIndex >= 0 && nextIndex < activeExcerciseNames.length) {
+      return activeExcerciseNames[nextIndex];
     }
     return null;
   }

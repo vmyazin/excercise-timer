@@ -279,6 +279,34 @@ input[type="number"]:focus {
     pointer-events: none;
 }
 
+.rest-duration {
+    max-width: 100px;
+    flex: 0 0 auto;
+}
+
+.rest-duration:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.rest-duration-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow: hidden;
+    max-width: 120px;
+    transition: all var(--transition-medium);
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.rest-duration-wrapper.hidden {
+    max-width: 0;
+    opacity: 0;
+    transform: translateX(-10px);
+    pointer-events: none;
+}
+
 .duration-label {
     font-size: 14px;
     color: var(--text-secondary);
@@ -479,6 +507,11 @@ input[type="number"]:focus {
     border-color: rgba(255, 149, 0, 0.2) !important;
 }
 
+.rest {
+    background: linear-gradient(135deg, #e6f3ff 0%, #d6ebff 100%) !important;
+    border-color: rgba(0, 122, 255, 0.2) !important;
+}
+
 .all-complete {
     background: linear-gradient(135deg, #e6f4ea 0%, #d6edd9 100%) !important;
     border-color: rgba(52, 199, 89, 0.3) !important;
@@ -571,6 +604,10 @@ textarea {
     .warm-up {
         background: linear-gradient(135deg, rgba(255, 159, 10, 0.1) 0%, rgba(255, 159, 10, 0.15) 100%) !important;
         border-color: rgba(255, 159, 10, 0.3) !important;
+    }
+    .rest {
+        background: linear-gradient(135deg, rgba(0, 122, 255, 0.1) 0%, rgba(0, 122, 255, 0.15) 100%) !important;
+        border-color: rgba(0, 122, 255, 0.3) !important;
     }
     .all-complete {
         background: linear-gradient(135deg, rgba(48, 209, 88, 0.15) 0%, rgba(48, 209, 88, 0.2) 100%) !important;

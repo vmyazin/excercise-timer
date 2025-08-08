@@ -43,7 +43,18 @@
                             <span class="checkbox-text">Enable warm-up</span>
                         </label>
                         <div class="warmup-duration-wrapper">
-                            <input type="number" id="warmupDuration" value="5" min="3" max="30" class="input-field warmup-duration">
+                            <input type="number" id="warmupDuration" value="10" min="3" max="30" class="input-field warmup-duration">
+                            <span class="duration-label">sec</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group checkbox-group">
+                        <label for="enableRest" class="checkbox-label">
+                            <input type="checkbox" id="enableRest" class="checkbox-input">
+                            <span class="checkbox-text">Enable rest between steps</span>
+                        </label>
+                        <div class="rest-duration-wrapper">
+                            <input type="number" id="restDuration" value="5" min="5" max="60" class="input-field rest-duration">
                             <span class="duration-label">sec</span>
                         </div>
                     </div>

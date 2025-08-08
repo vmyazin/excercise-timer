@@ -4,6 +4,9 @@ export class FormController {
   private enableWarmupCheckbox: HTMLInputElement;
   private warmupDurationInput: HTMLInputElement;
   private warmupDurationWrapper: HTMLElement;
+  private enableRestCheckbox: HTMLInputElement;
+  private restDurationInput: HTMLInputElement;
+  private restDurationWrapper: HTMLElement;
   private stepsInput: HTMLInputElement;
   private durationInput: HTMLInputElement;
 
@@ -11,12 +14,16 @@ export class FormController {
     this.enableWarmupCheckbox = document.getElementById("enableWarmup") as HTMLInputElement;
     this.warmupDurationInput = document.getElementById("warmupDuration") as HTMLInputElement;
     this.warmupDurationWrapper = document.querySelector(".warmup-duration-wrapper") as HTMLElement;
+    this.enableRestCheckbox = document.getElementById("enableRest") as HTMLInputElement;
+    this.restDurationInput = document.getElementById("restDuration") as HTMLInputElement;
+    this.restDurationWrapper = document.querySelector(".rest-duration-wrapper") as HTMLElement;
     this.stepsInput = document.getElementById("steps") as HTMLInputElement;
     this.durationInput = document.getElementById("duration") as HTMLInputElement;
   }
 
   public initialize(): void {
     this.initializeWarmupToggle();
+    this.initializeRestToggle();
   }
 
   private initializeWarmupToggle(): void {
@@ -34,12 +41,29 @@ export class FormController {
     });
   }
 
+  private initializeRestToggle(): void {
+    if (!this.enableRestCheckbox.checked) {
+      this.restDurationWrapper.classList.add("hidden");
+    }
+
+    this.enableRestCheckbox.addEventListener("change", (e) => {
+      const target = e.target as HTMLInputElement;
+      if (target.checked) {
+        this.restDurationWrapper.classList.remove("hidden");
+      } else {
+        this.restDurationWrapper.classList.add("hidden");
+      }
+    });
+  }
+
   public getTimerConfig(): TimerConfig {
     return {
       steps: parseInt(this.stepsInput.value),
       duration: parseInt(this.durationInput.value),
       warmUpEnabled: this.enableWarmupCheckbox.checked,
-      warmUpDuration: parseInt(this.warmupDurationInput.value)
+      warmUpDuration: parseInt(this.warmupDurationInput.value),
+      restEnabled: this.enableRestCheckbox.checked,
+      restDuration: parseInt(this.restDurationInput.value)
     };
   }
 
@@ -58,6 +82,11 @@ export class FormController {
     
     if (config.warmUpEnabled && (config.warmUpDuration < 3 || config.warmUpDuration > 30)) {
       alert("Warm-up duration must be between 3 and 30 seconds");
+      return false;
+    }
+    
+    if (config.restEnabled && (config.restDuration < 5 || config.restDuration > 60)) {
+      alert("Rest duration must be between 5 and 60 seconds");
       return false;
     }
     

@@ -5,8 +5,11 @@ export interface TimerState {
   stepDuration: number;
   isRunning: boolean;
   isWarmUp: boolean;
+  isRest: boolean;
   warmUpEnabled: boolean;
   warmUpDuration: number;
+  restEnabled: boolean;
+  restDuration: number;
   hasPlayedWarning: boolean;
 }
 
@@ -15,6 +18,8 @@ export interface TimerConfig {
   duration: number;
   warmUpEnabled: boolean;
   warmUpDuration: number;
+  restEnabled: boolean;
+  restDuration: number;
 }
 
 export interface TimerDisplay {
