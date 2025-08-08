@@ -30,6 +30,29 @@ window.addEventListener("DOMContentLoaded", () => {
     let hasPlayedWarning = false;
     const countdownBeeps = new Set();
     let isWarmUp = false;
+    let warmUpEnabled = false;
+    let warmUpDuration = 5;
+
+    // Add event listeners for checkbox and warmup duration
+    window.addEventListener("DOMContentLoaded", () => {
+        const enableWarmupCheckbox = document.getElementById("enableWarmup");
+        const warmupDurationInput = document.getElementById("warmupDuration");
+        const warmupDurationWrapper = document.querySelector(".warmup-duration-wrapper");
+
+        // Initialize warmup duration state
+        if (!enableWarmupCheckbox.checked) {
+            warmupDurationWrapper.classList.add("hidden");
+        }
+
+        // Handle checkbox toggle
+        enableWarmupCheckbox.addEventListener("change", (e) => {
+            if (e.target.checked) {
+                warmupDurationWrapper.classList.remove("hidden");
+            } else {
+                warmupDurationWrapper.classList.add("hidden");
+            }
+        });
+    });
 
     function initAudio() {
         if (!audioContext) {
@@ -83,7 +106,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
         let stepProgress;
         if (isWarmUp) {
-            stepProgress = ((5 - timeRemaining) / 5) * 100;
+            stepProgress = ((warmUpDuration - timeRemaining) / warmUpDuration) * 100;
         } else {
             stepProgress = ((stepDuration - timeRemaining) / stepDuration) * 100;
         }
@@ -103,15 +126,28 @@ window.addEventListener("DOMContentLoaded", () => {
     function startTimer() {
         const stepsInput = document.getElementById("steps");
         const durationInput = document.getElementById("duration");
+        const enableWarmupCheckbox = document.getElementById("enableWarmup");
+        const warmupDurationInput = document.getElementById("warmupDuration");
 
         totalSteps = parseInt(stepsInput.value);
         stepDuration = parseInt(durationInput.value);
+        warmUpEnabled = enableWarmupCheckbox.checked;
+        warmUpDuration = parseInt(warmupDurationInput.value);
+
         currentStep = 0;
-        timeRemaining = 5;
         isRunning = true;
-        isWarmUp = true;
         hasPlayedWarning = false;
         countdownBeeps.clear();
+
+        // Set initial state based on warm-up preference
+        if (warmUpEnabled) {
+            isWarmUp = true;
+            timeRemaining = warmUpDuration;
+        } else {
+            isWarmUp = false;
+            currentStep = 1;
+            timeRemaining = stepDuration;
+        }
 
         document.getElementById("setupSection").classList.add("hidden");
         document.getElementById("stopBtn").classList.remove("hidden");
@@ -201,7 +237,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("currentStep").textContent = "Ready to Start";
         document.getElementById("timeDisplay").textContent = "00:00";
-        document.getElementById("progressInfo").textContent = "Set your parameters above";
+        document.getElementById("progressInfo").textContent = "";
         document.getElementById("progressFill").style.width = "0%";
     }
 

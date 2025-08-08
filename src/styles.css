@@ -191,6 +191,100 @@ input[type="number"]:focus {
 }
 
 
+/* Checkbox group styling */
+
+.checkbox-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    min-width: auto;
+    flex: 1;
+}
+
+.checkbox-input {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    border-radius: 4px;
+    margin-right: 8px;
+    position: relative;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    background: white;
+    flex-shrink: 0;
+}
+
+.checkbox-input:hover {
+    border-color: rgba(0, 0, 0, 0.4);
+}
+
+.checkbox-input:checked {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+}
+
+.checkbox-input:checked::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 3px;
+    width: 6px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox-text {
+    font-size: 16px;
+    color: var(--text-primary);
+    font-weight: 400;
+}
+
+.warmup-duration {
+    max-width: 100px;
+    flex: 0 0 auto;
+}
+
+.warmup-duration:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.warmup-duration-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow: hidden;
+    max-width: 120px;
+    transition: all var(--transition-medium);
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.warmup-duration-wrapper.hidden {
+    max-width: 0;
+    opacity: 0;
+    transform: translateX(-10px);
+    pointer-events: none;
+}
+
+.duration-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+
 /* macOS-style buttons */
 
 .button {
@@ -462,6 +556,17 @@ textarea {
     .all-complete {
         background: linear-gradient(135deg, rgba(48, 209, 88, 0.15) 0%, rgba(48, 209, 88, 0.2) 100%) !important;
         border-color: rgba(48, 209, 88, 0.4) !important;
+    }
+    .checkbox-input {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+    .checkbox-input:hover {
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+    .checkbox-input:checked {
+        background: var(--accent-blue);
+        border-color: var(--accent-blue);
     }
 }
 
