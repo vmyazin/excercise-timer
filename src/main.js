@@ -12,10 +12,13 @@ async function greet() {
 window.addEventListener("DOMContentLoaded", () => {
     greetInputEl = document.querySelector("#greet-input");
     greetMsgEl = document.querySelector("#greet-msg");
-    document.querySelector("#greet-form").addEventListener("submit", (e) => {
-        e.preventDefault();
-        greet();
-    });
+    const greetForm = document.querySelector("#greet-form");
+    if (greetForm && greetInputEl && greetMsgEl) {
+        greetForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            greet();
+        });
+    }
 });
 
 // Timer logic extracted from index.html
@@ -33,11 +36,27 @@ window.addEventListener("DOMContentLoaded", () => {
     let warmUpEnabled = false;
     let warmUpDuration = 5;
 
-    // Add event listeners for checkbox and warmup duration
+    // 🫣 Suggested component-like: preset model and selection controller
+    const presetWorkout = [
+        "Push-ups (standard or knees)",
+        "Downward dog to upward dog flow (slow breaths)",
+        "Bodyweight squats",
+        "Forearm plank",
+        "Prone Y-T raises (face down, lift arms in Y then T, light squeezes)",
+        "Glute bridge",
+        "Toe touch to overhead reach (hamstring to extension)",
+        "Standing hip openers (slow knee circles)"
+    ];
+
+    let activeExerciseNames = null; // null means manual/custom mode
+
+    // Add event listeners for checkbox and warmup duration and presets
     window.addEventListener("DOMContentLoaded", () => {
         const enableWarmupCheckbox = document.getElementById("enableWarmup");
         const warmupDurationInput = document.getElementById("warmupDuration");
         const warmupDurationWrapper = document.querySelector(".warmup-duration-wrapper");
+        const presetSelect = document.getElementById("presetSelect");
+        const stepsInput = document.getElementById("steps");
 
         // Initialize warmup duration state
         if (!enableWarmupCheckbox.checked) {
@@ -52,6 +71,23 @@ window.addEventListener("DOMContentLoaded", () => {
                 warmupDurationWrapper.classList.add("hidden");
             }
         });
+
+        // Handle preset selection
+        if (presetSelect) {
+            presetSelect.addEventListener("change", (e) => {
+                const value = e.target.value;
+                if (value === "presetWorkout") {
+                    activeExerciseNames = [...presetWorkout];
+                    stepsInput.value = String(activeExerciseNames.length);
+                } else {
+                    activeExerciseNames = null; // custom mode
+                }
+                renderUpcomingExercisesPreview();
+            });
+        }
+
+        // Initialize preview state on load
+        renderUpcomingExercisesPreview();
     });
 
     function initAudio() {
@@ -85,6 +121,31 @@ window.addEventListener("DOMContentLoaded", () => {
       .padStart(2, "0")}`;
     }
 
+    function getCurrentExerciseName() {
+        if (!activeExerciseNames || isWarmUp || currentStep <= 0) return null;
+        const index = currentStep - 1; // steps are 1-indexed in UI
+        if (index >= 0 && index < activeExerciseNames.length) {
+            return activeExerciseNames[index];
+        }
+        return null;
+    }
+
+    function renderUpcomingExercisesPreview() {
+        // For now, we reuse #progressInfo during setup to show the list
+        const progressInfoEl = document.getElementById("progressInfo");
+        const setupSection = document.getElementById("setupSection");
+        if (!progressInfoEl || !setupSection) return;
+
+        const isSetupVisible = !setupSection.classList.contains("hidden");
+        if (!isSetupVisible) return;
+
+        if (activeExerciseNames && activeExerciseNames.length) {
+            progressInfoEl.textContent = `Preset loaded: ${activeExerciseNames.length} steps`;
+        } else {
+            progressInfoEl.textContent = "";
+        }
+    }
+
     function updateDisplay() {
         const timeDisplayEl = document.getElementById("timeDisplay");
         const currentStepEl = document.getElementById("currentStep");
@@ -99,8 +160,13 @@ window.addEventListener("DOMContentLoaded", () => {
             progressInfoEl.textContent = "Get ready to start!";
             timerDisplayEl.classList.add("warm-up");
         } else {
-            currentStepEl.textContent = `Step ${currentStep} of ${totalSteps}`;
-            progressInfoEl.textContent = `${totalSteps - currentStep} steps remaining`;
+            const exerciseName = getCurrentExerciseName();
+            currentStepEl.textContent = exerciseName ?
+                `${exerciseName}` :
+                `Step ${currentStep} of ${totalSteps}`;
+            const remainingSteps = Math.max(totalSteps - currentStep, 0);
+            const suffix = activeExerciseNames && !exerciseName ? " (custom)" : "";
+            progressInfoEl.textContent = `${remainingSteps} steps remaining${suffix}`;
             timerDisplayEl.classList.remove("warm-up");
         }
 
@@ -129,10 +195,17 @@ window.addEventListener("DOMContentLoaded", () => {
         const enableWarmupCheckbox = document.getElementById("enableWarmup");
         const warmupDurationInput = document.getElementById("warmupDuration");
 
+        // If a preset is active, respect its length for total steps
+        const presetSteps = activeExerciseNames ? activeExerciseNames.length : null;
+
         totalSteps = parseInt(stepsInput.value);
         stepDuration = parseInt(durationInput.value);
         warmUpEnabled = enableWarmupCheckbox.checked;
         warmUpDuration = parseInt(warmupDurationInput.value);
+
+        if (presetSteps != null) {
+            totalSteps = presetSteps;
+        }
 
         currentStep = 0;
         isRunning = true;
@@ -239,6 +312,9 @@ window.addEventListener("DOMContentLoaded", () => {
         document.getElementById("timeDisplay").textContent = "00:00";
         document.getElementById("progressInfo").textContent = "";
         document.getElementById("progressFill").style.width = "0%";
+
+        // Re-render preview after reset in case user changes presets
+        renderUpcomingExercisesPreview();
     }
 
     document.addEventListener("click", initAudio, { once: true });
