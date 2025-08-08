@@ -30,7 +30,7 @@ export class AudioManager {
     oscillator.stop(this.audioContext.currentTime + duration / 1000);
   }
 
-  public playStepComplete(): void {
+  public playSetComplete(): void {
     this.playBeep(1200, 500);
   }
 

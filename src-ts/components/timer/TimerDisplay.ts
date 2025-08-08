@@ -2,14 +2,14 @@ import type { TimerState, TimerDisplay } from '../../types/timer.js';
 
 export class TimerDisplayController {
   private timeDisplayEl: HTMLElement;
-  private currentStepEl: HTMLElement;
+  private currentSetEl: HTMLElement;
   private progressInfoEl: HTMLElement;
   private progressFillEl: HTMLElement;
   private timerDisplayEl: HTMLElement;
 
   constructor() {
     this.timeDisplayEl = document.getElementById("timeDisplay")!;
-    this.currentStepEl = document.getElementById("currentStep")!;
+    this.currentSetEl = document.getElementById("currentSet")!;
     this.progressInfoEl = document.getElementById("progressInfo")!;
     this.progressFillEl = document.getElementById("progressFill")!;
     this.timerDisplayEl = document.getElementById("timerDisplay")!;
@@ -25,7 +25,7 @@ export class TimerDisplayController {
     const display = this.getDisplayData(state, activeExcerciseNames);
     
     this.timeDisplayEl.textContent = display.timeDisplay;
-    this.currentStepEl.textContent = display.currentStep;
+    this.currentSetEl.textContent = display.currentSet;
     this.progressInfoEl.textContent = display.progressInfo;
     this.progressFillEl.style.width = `${display.progressPercent}%`;
 
@@ -35,29 +35,29 @@ export class TimerDisplayController {
   private getDisplayData(state: TimerState, activeExcerciseNames: string[] | null): TimerDisplay {
     const timeDisplay = this.formatTime(state.timeRemaining);
     
-    let currentStep: string;
+    let currentSet: string;
     let progressInfo: string;
     
     if (state.isWarmUp) {
-      currentStep = "Warm Up";
+      currentSet = "Warm Up";
       progressInfo = "Get ready to start!";
       this.timerDisplayEl.classList.add("warm-up");
       this.timerDisplayEl.classList.remove("rest");
     } else if (state.isRest) {
-      currentStep = "Rest";
-      const nextStepNum = state.currentStep + 1;
+      currentSet = "Rest";
+      const nextSetNum = state.currentSet + 1;
       const nextExcerciseName = this.getNextExcerciseName(state, activeExcerciseNames);
-      const nextStepDisplay = nextExcerciseName ? nextExcerciseName : `Step ${nextStepNum}`;
-      progressInfo = `Next: ${nextStepDisplay}`;
+      const nextSetDisplay = nextExcerciseName ? nextExcerciseName : `Set ${nextSetNum}`;
+      progressInfo = `Next: ${nextSetDisplay}`;
       this.timerDisplayEl.classList.add("rest");
       this.timerDisplayEl.classList.remove("warm-up");
     } else {
       const excerciseName = this.getCurrentExcerciseName(state, activeExcerciseNames);
-      currentStep = excerciseName ? excerciseName : `Step ${state.currentStep} of ${state.totalSteps}`;
+      currentSet = excerciseName ? excerciseName : `Set ${state.currentSet} of ${state.totalSets}`;
       
-      const remainingSteps = Math.max(state.totalSteps - state.currentStep, 0);
+      const remainingSets = Math.max(state.totalSets - state.currentSet, 0);
       const suffix = activeExcerciseNames && !excerciseName ? " (custom)" : "";
-      progressInfo = `${remainingSteps} steps remaining${suffix}`;
+      progressInfo = `${remainingSets} sets remaining${suffix}`;
       
       this.timerDisplayEl.classList.remove("warm-up", "rest");
     }
@@ -68,16 +68,16 @@ export class TimerDisplayController {
     } else if (state.isRest) {
       progressPercent = ((state.restDuration - state.timeRemaining) / state.restDuration) * 100;
     } else {
-      progressPercent = ((state.stepDuration - state.timeRemaining) / state.stepDuration) * 100;
+      progressPercent = ((state.setDuration - state.timeRemaining) / state.setDuration) * 100;
     }
 
-    return { currentStep, timeDisplay, progressInfo, progressPercent };
+    return { currentSet, timeDisplay, progressInfo, progressPercent };
   }
 
   private getCurrentExcerciseName(state: TimerState, activeExcerciseNames: string[] | null): string | null {
-    if (!activeExcerciseNames || state.isWarmUp || state.isRest || state.currentStep <= 0) return null;
+    if (!activeExcerciseNames || state.isWarmUp || state.isRest || state.currentSet <= 0) return null;
     
-    const index = state.currentStep - 1;
+    const index = state.currentSet - 1;
     if (index >= 0 && index < activeExcerciseNames.length) {
       return activeExcerciseNames[index];
     }
@@ -85,9 +85,9 @@ export class TimerDisplayController {
   }
 
   private getNextExcerciseName(state: TimerState, activeExcerciseNames: string[] | null): string | null {
-    if (!activeExcerciseNames || state.currentStep < 0) return null;
+    if (!activeExcerciseNames || state.currentSet < 0) return null;
     
-    const nextIndex = state.currentStep; // currentStep is the step we just completed, so next is currentStep (0-indexed)
+    const nextIndex = state.currentSet; // currentSet is the set we just completed, so next is currentSet (0-indexed)
     if (nextIndex >= 0 && nextIndex < activeExcerciseNames.length) {
       return activeExcerciseNames[nextIndex];
     }
@@ -102,15 +102,15 @@ export class TimerDisplayController {
     }
   }
 
-  public showStepComplete(): void {
-    this.timerDisplayEl.classList.add("step-complete");
+  public showSetComplete(): void {
+    this.timerDisplayEl.classList.add("set-complete");
     setTimeout(() => {
-      this.timerDisplayEl.classList.remove("step-complete");
+      this.timerDisplayEl.classList.remove("set-complete");
     }, 1000);
   }
 
   public showWorkoutComplete(): void {
-    this.currentStepEl.textContent = "Workout Complete!";
+    this.currentSetEl.textContent = "Workout Complete!";
     this.timeDisplayEl.textContent = "DONE";
     this.progressInfoEl.textContent = "Great job! 🎉";
     this.progressFillEl.style.width = "100%";
@@ -118,8 +118,8 @@ export class TimerDisplayController {
   }
 
   public reset(): void {
-    this.timerDisplayEl.classList.remove("warning", "step-complete", "all-complete", "warm-up");
-    this.currentStepEl.textContent = "Ready to Start";
+    this.timerDisplayEl.classList.remove("warning", "set-complete", "all-complete", "warm-up");
+    this.currentSetEl.textContent = "Ready to Start";
     this.timeDisplayEl.textContent = "00:00";
     this.progressInfoEl.textContent = "";
     this.progressFillEl.style.width = "0%";
@@ -130,7 +130,7 @@ export class TimerDisplayController {
     if (!setupSection || setupSection.classList.contains("hidden")) return;
 
     if (activeExcerciseNames && activeExcerciseNames.length) {
-      this.progressInfoEl.textContent = `Preset loaded: ${activeExcerciseNames.length} steps`;
+      this.progressInfoEl.textContent = `Preset loaded: ${activeExcerciseNames.length} sets`;
     } else {
       this.progressInfoEl.textContent = "";
     }

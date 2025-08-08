@@ -8,7 +8,7 @@ export class FormController {
   private enableRestCheckbox: HTMLInputElement;
   private restDurationInput: HTMLInputElement;
   private restDurationWrapper: HTMLElement;
-  private stepsInput: HTMLInputElement;
+  private setsInput: HTMLInputElement;
   private durationInput: HTMLInputElement;
 
   constructor() {
@@ -18,7 +18,7 @@ export class FormController {
     this.enableRestCheckbox = document.getElementById("enableRest") as HTMLInputElement;
     this.restDurationInput = document.getElementById("restDuration") as HTMLInputElement;
     this.restDurationWrapper = document.querySelector(".rest-duration-wrapper") as HTMLElement;
-    this.stepsInput = document.getElementById("steps") as HTMLInputElement;
+    this.setsInput = document.getElementById("sets") as HTMLInputElement;
     this.durationInput = document.getElementById("duration") as HTMLInputElement;
   }
 
@@ -60,7 +60,7 @@ export class FormController {
 
   public getTimerConfig(): TimerConfig {
     return {
-      steps: parseInt(this.stepsInput.value),
+      sets: parseInt(this.setsInput.value),
       duration: parseInt(this.durationInput.value),
       warmUpEnabled: this.enableWarmupCheckbox.checked,
       warmUpDuration: parseInt(this.warmupDurationInput.value),
@@ -72,8 +72,8 @@ export class FormController {
   public validateForm(): boolean {
     const config = this.getTimerConfig();
     
-    if (config.steps < 1 || config.steps > 20) {
-      alert("Steps must be between 1 and 20");
+    if (config.sets < 1 || config.sets > 20) {
+      alert("Sets must be between 1 and 20");
       return false;
     }
     

@@ -33,7 +33,7 @@ export class PresetManager {
   }
 
   public initialize(): void {
-    const stepsInput = document.getElementById("steps") as HTMLInputElement;
+    const setsInput = document.getElementById("sets") as HTMLInputElement;
 
     // Initialize custom preset select component
     try {
@@ -42,7 +42,7 @@ export class PresetManager {
           { 
             value: 'custom', 
             label: 'Default', 
-            description: 'Set your own steps and duration' 
+            description: 'Set your own sets and duration' 
           },
           { 
             value: 'presetWorkout', 
@@ -52,7 +52,7 @@ export class PresetManager {
         ],
         defaultValue: 'custom',
         onChange: (value: string) => {
-          this.handlePresetChange(value as PresetMode, stepsInput);
+          this.handlePresetChange(value as PresetMode, setsInput);
         }
       });
     } catch (error) {
@@ -63,21 +63,21 @@ export class PresetManager {
         originalSelect.style.display = 'block';
         originalSelect.addEventListener("change", (e) => {
           const target = e.target as HTMLSelectElement;
-          this.handlePresetChange(target.value as PresetMode, stepsInput);
+          this.handlePresetChange(target.value as PresetMode, setsInput);
         });
       }
     }
   }
 
-  private handlePresetChange(mode: PresetMode, stepsInput: HTMLInputElement): void {
+  private handlePresetChange(mode: PresetMode, setsInput: HTMLInputElement): void {
     this.state.activeMode = mode;
     
     if (mode === "presetWorkout" && this.presetWorkouts.presetWorkout) {
       const preset = this.presetWorkouts.presetWorkout;
       this.state.activeExcerciseNames = [...preset.excercises];
       
-      if (stepsInput) {
-        stepsInput.value = String(this.state.activeExcerciseNames.length);
+          if (setsInput) {
+      setsInput.value = String(this.state.activeExcerciseNames.length);
       }
       
       // Apply preset rest configuration if available

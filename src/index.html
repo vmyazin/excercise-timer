@@ -28,12 +28,12 @@
                         </div>
                     </div>
                     <div class="input-group">
-                        <label for="steps">Number of Steps:</label>
+                        <label for="sets">Number of Sets:</label>
                         <div class="number-input-wrapper">
-                            <input type="number" id="steps" value="5" min="1" max="20" class="input-field">
+                            <input type="number" id="sets" value="5" min="1" max="20" class="input-field">
                             <div class="custom-controls">
-                                <button type="button" class="control-btn decrement" data-target="steps"></button>
-                                <button type="button" class="control-btn increment" data-target="steps"></button>
+                                <button type="button" class="control-btn decrement" data-target="sets"></button>
+                                <button type="button" class="control-btn increment" data-target="sets"></button>
                             </div>
                         </div>
                     </div>
@@ -68,7 +68,7 @@
                     <div class="input-group checkbox-group">
                         <label for="enableRest" class="checkbox-label">
                             <input type="checkbox" id="enableRest" class="checkbox-input">
-                            <span class="checkbox-text">Enable rest between steps</span>
+                            <span class="checkbox-text">Enable rest between sets</span>
                         </label>
                         <div class="rest-duration-wrapper">
                             <div class="number-input-wrapper">
@@ -90,7 +90,7 @@
             <section class="timer-section">
                 <div class="timer-display" id="timerDisplay">
                     <div class="timer-content">
-                        <div class="current-step" id="currentStep">Ready to Start</div>
+                        <div class="current-set" id="currentSet">Ready to Start</div>
                         <div class="time-display" id="timeDisplay">00:00</div>
                         <div class="progress-container">
                             <div class="progress-bar">

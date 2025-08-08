@@ -12,10 +12,10 @@ export class Timer {
 
   constructor() {
     this.state = {
-      currentStep: 0,
+      currentSet: 0,
       timeRemaining: 0,
-      totalSteps: 0,
-      stepDuration: 0,
+      totalSets: 0,
+      setDuration: 0,
       isRunning: false,
       isWarmUp: false,
       isRest: false,
@@ -35,17 +35,17 @@ export class Timer {
   }
 
   public start(config: TimerConfig): void {
-    const presetSteps = this.activeExcerciseNames ? this.activeExcerciseNames.length : null;
+    const presetSets = this.activeExcerciseNames ? this.activeExcerciseNames.length : null;
     
     this.state = {
       ...this.state,
-      totalSteps: presetSteps ?? config.steps,
-      stepDuration: config.duration,
+      totalSets: presetSets ?? config.sets,
+      setDuration: config.duration,
       warmUpEnabled: config.warmUpEnabled,
       warmUpDuration: config.warmUpDuration,
       restEnabled: config.restEnabled,
       restDuration: config.restDuration,
-      currentStep: 0,
+      currentSet: 0,
       isRunning: true,
       isRest: false,
       hasPlayedWarning: false
@@ -58,8 +58,8 @@ export class Timer {
       this.state.timeRemaining = this.state.warmUpDuration;
     } else {
       this.state.isWarmUp = false;
-      this.state.currentStep = 1;
-      this.state.timeRemaining = this.state.stepDuration;
+      this.state.currentSet = 1;
+      this.state.timeRemaining = this.state.setDuration;
     }
 
     this.showTimerSection();
@@ -89,16 +89,16 @@ export class Timer {
       } else if (this.state.isRest) {
         this.completeRest();
       } else {
-        this.completeStep();
+        this.completeSet();
       }
     }
   }
 
   private completeWarmUp(): void {
-    this.audioManager.playStepComplete();
+    this.audioManager.playSetComplete();
     this.state.isWarmUp = false;
-    this.state.currentStep = 1;
-    this.state.timeRemaining = this.state.stepDuration;
+    this.state.currentSet = 1;
+    this.state.timeRemaining = this.state.setDuration;
     this.countdownBeeps.clear();
 
     setTimeout(() => {
@@ -106,24 +106,24 @@ export class Timer {
     }, 500);
   }
 
-  private completeStep(): void {
-    this.audioManager.playStepComplete();
+  private completeSet(): void {
+    this.audioManager.playSetComplete();
 
-    if (this.state.currentStep < this.state.totalSteps) {
+    if (this.state.currentSet < this.state.totalSets) {
       // Check if we should start a rest period
-      if (this.state.restEnabled && this.state.currentStep < this.state.totalSteps) {
+      if (this.state.restEnabled && this.state.currentSet < this.state.totalSets) {
         this.state.isRest = true;
         this.state.timeRemaining = this.state.restDuration;
         this.state.hasPlayedWarning = false;
         this.countdownBeeps.clear();
-        this.display.showStepComplete();
+        this.display.showSetComplete();
       } else {
-        // No rest, go directly to next step
-        this.state.currentStep++;
-        this.state.timeRemaining = this.state.stepDuration;
+        // No rest, go directly to next set
+        this.state.currentSet++;
+        this.state.timeRemaining = this.state.setDuration;
         this.state.hasPlayedWarning = false;
         this.countdownBeeps.clear();
-        this.display.showStepComplete();
+        this.display.showSetComplete();
       }
     } else {
       this.complete();
@@ -131,10 +131,10 @@ export class Timer {
   }
 
   private completeRest(): void {
-    this.audioManager.playStepComplete();
+    this.audioManager.playSetComplete();
     this.state.isRest = false;
-    this.state.currentStep++;
-    this.state.timeRemaining = this.state.stepDuration;
+    this.state.currentSet++;
+    this.state.timeRemaining = this.state.setDuration;
     this.state.hasPlayedWarning = false;
     this.countdownBeeps.clear();
   }
@@ -166,7 +166,7 @@ export class Timer {
       isRunning: false,
       isWarmUp: false,
       isRest: false,
-      currentStep: 0,
+      currentSet: 0,
       timeRemaining: 0,
       hasPlayedWarning: false
     };

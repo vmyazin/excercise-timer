@@ -5,7 +5,7 @@ class PresetSelect {
         this.containerId = containerId;
         this.options = {
             presets: [
-                { value: 'custom', label: 'Custom (manual)', description: 'Set your own steps and duration' },
+                { value: 'custom', label: 'Custom (manual)', description: 'Set your own sets and duration' },
                 { value: 'presetWorkout', label: 'Preset Workout (8)', description: '8 bodyweight exercises' }
             ],
             defaultValue: 'custom',

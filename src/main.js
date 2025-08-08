@@ -24,10 +24,10 @@ window.addEventListener("DOMContentLoaded", () => {
 // Timer logic extracted from index.html
 (function attachExcerciseTimer() {
     let timerInterval;
-    let currentStep = 0;
+    let currentSet = 0;
     let timeRemaining = 0;
-    let totalSteps = 0;
-    let stepDuration = 0;
+    let totalSets = 0;
+    let setDuration = 0;
     let isRunning = false;
     let audioContext;
     let hasPlayedWarning = false;
@@ -60,7 +60,7 @@ window.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("DOMContentLoaded", () => {
         const enableWarmupCheckbox = document.getElementById("enableWarmup");
         const warmupDurationWrapper = document.querySelector(".warmup-duration-wrapper");
-        const stepsInput = document.getElementById("steps");
+        const setsInput = document.getElementById("sets");
 
         // Initialize warmup duration state
         if (!enableWarmupCheckbox.checked) {
@@ -100,7 +100,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 presets: [{
                         value: 'custom',
                         label: 'Custom (manual)',
-                        description: 'Set your own steps and duration'
+                        description: 'Set your own sets and duration'
                     },
                     {
                         value: 'presetWorkout',
@@ -112,7 +112,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 onChange: (value) => {
                     if (value === "presetWorkout") {
                         activeExcerciseNames = [...presetWorkout];
-                        stepsInput.value = String(activeExcerciseNames.length);
+                        setsInput.value = String(activeExcerciseNames.length);
                     } else {
                         activeExcerciseNames = null; // custom mode
                     }
@@ -129,7 +129,7 @@ window.addEventListener("DOMContentLoaded", () => {
                     const value = e.target.value;
                     if (value === "presetWorkout") {
                         activeExcerciseNames = [...presetWorkout];
-                        stepsInput.value = String(activeExcerciseNames.length);
+                        setsInput.value = String(activeExcerciseNames.length);
                     } else {
                         activeExcerciseNames = null; // custom mode
                     }
@@ -174,8 +174,8 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     function getCurrentExcerciseName() {
-        if (!activeExcerciseNames || isWarmUp || currentStep <= 0) return null;
-        const index = currentStep - 1; // steps are 1-indexed in UI
+        if (!activeExcerciseNames || isWarmUp || currentSet <= 0) return null;
+        const index = currentSet - 1; // sets are 1-indexed in UI
         if (index >= 0 && index < activeExcerciseNames.length) {
             return activeExcerciseNames[index];
         }
@@ -183,8 +183,8 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     function getNextExcerciseName() {
-        if (!activeExcerciseNames || currentStep >= activeExcerciseNames.length) return null;
-        const index = currentStep; // steps are 1-indexed in UI
+        if (!activeExcerciseNames || currentSet >= activeExcerciseNames.length) return null;
+        const index = currentSet; // sets are 1-indexed in UI
         if (index >= 0 && index < activeExcerciseNames.length) {
             return activeExcerciseNames[index];
         }
@@ -201,7 +201,7 @@ window.addEventListener("DOMContentLoaded", () => {
         if (!isSetupVisible) return;
 
         if (activeExcerciseNames && activeExcerciseNames.length) {
-            progressInfoEl.textContent = `Preset loaded: ${activeExcerciseNames.length} steps`;
+            progressInfoEl.textContent = `Preset loaded: ${activeExcerciseNames.length} sets`;
         } else {
             progressInfoEl.textContent = "";
         }
@@ -209,7 +209,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     function updateDisplay() {
         const timeDisplayEl = document.getElementById("timeDisplay");
-        const currentStepEl = document.getElementById("currentStep");
+        const currentSetEl = document.getElementById("currentSet");
         const progressInfoEl = document.getElementById("progressInfo");
         const progressFillEl = document.getElementById("progressFill");
         const timerDisplayEl = document.getElementById("timerDisplay");
@@ -217,38 +217,38 @@ window.addEventListener("DOMContentLoaded", () => {
         timeDisplayEl.textContent = formatTime(timeRemaining);
 
         if (isWarmUp) {
-            currentStepEl.textContent = "Warm Up";
+            currentSetEl.textContent = "Warm Up";
             progressInfoEl.textContent = "Get ready to start!";
             timerDisplayEl.classList.add("warm-up");
             timerDisplayEl.classList.remove("rest");
         } else if (isRest) {
-            currentStepEl.textContent = "Rest";
-            const nextStepNum = currentStep + 1;
+            currentSetEl.textContent = "Rest";
+            const nextSetNum = currentSet + 1;
             const nextExcerciseName = getNextExcerciseName();
-            const nextStepDisplay = nextExcerciseName ? nextExcerciseName : `Step ${nextStepNum}`;
-            progressInfoEl.textContent = `Next: ${nextStepDisplay}`;
+            const nextSetDisplay = nextExcerciseName ? nextExcerciseName : `Set ${nextSetNum}`;
+            progressInfoEl.textContent = `Next: ${nextSetDisplay}`;
             timerDisplayEl.classList.add("rest");
             timerDisplayEl.classList.remove("warm-up");
         } else {
             const excerciseName = getCurrentExcerciseName();
-            currentStepEl.textContent = excerciseName ?
+            currentSetEl.textContent = excerciseName ?
                 `${excerciseName}` :
-                `Step ${currentStep} of ${totalSteps}`;
-            const remainingSteps = Math.max(totalSteps - currentStep, 0);
+                `Set ${currentSet} of ${totalSets}`;
+            const remainingSets = Math.max(totalSets - currentSet, 0);
             const suffix = activeExcerciseNames && !excerciseName ? " (custom)" : "";
-            progressInfoEl.textContent = `${remainingSteps} steps remaining${suffix}`;
+            progressInfoEl.textContent = `${remainingSets} sets remaining${suffix}`;
             timerDisplayEl.classList.remove("warm-up", "rest");
         }
 
-        let stepProgress;
+        let setProgress;
         if (isWarmUp) {
-            stepProgress = ((warmUpDuration - timeRemaining) / warmUpDuration) * 100;
+            setProgress = ((warmUpDuration - timeRemaining) / warmUpDuration) * 100;
         } else if (isRest) {
-            stepProgress = ((restDuration - timeRemaining) / restDuration) * 100;
+            setProgress = ((restDuration - timeRemaining) / restDuration) * 100;
         } else {
-            stepProgress = ((stepDuration - timeRemaining) / stepDuration) * 100;
+            setProgress = ((setDuration - timeRemaining) / setDuration) * 100;
         }
-        progressFillEl.style.width = `${stepProgress}%`;
+        progressFillEl.style.width = `${setProgress}%`;
 
         if (timeRemaining <= 3 && timeRemaining > 0) {
             timerDisplayEl.classList.add("warning");
@@ -262,28 +262,28 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     function startTimer() {
-        const stepsInput = document.getElementById("steps");
+        const setsInput = document.getElementById("sets");
         const durationInput = document.getElementById("duration");
         const enableWarmupCheckbox = document.getElementById("enableWarmup");
         const warmupDurationInput = document.getElementById("warmupDuration");
         const enableRestCheckbox = document.getElementById("enableRest");
         const restDurationInput = document.getElementById("restDuration");
 
-        // If a preset is active, respect its length for total steps
-        const presetSteps = activeExcerciseNames ? activeExcerciseNames.length : null;
+        // If a preset is active, respect its length for total sets
+        const presetSets = activeExcerciseNames ? activeExcerciseNames.length : null;
 
-        totalSteps = parseInt(stepsInput.value);
-        stepDuration = parseInt(durationInput.value);
+        totalSets = parseInt(setsInput.value);
+        setDuration = parseInt(durationInput.value);
         warmUpEnabled = enableWarmupCheckbox.checked;
         warmUpDuration = parseInt(warmupDurationInput.value);
         restEnabled = enableRestCheckbox.checked;
         restDuration = parseInt(restDurationInput.value);
 
-        if (presetSteps != null) {
-            totalSteps = presetSteps;
+        if (presetSets != null) {
+            totalSets = presetSets;
         }
 
-        currentStep = 0;
+        currentSet = 0;
         isRunning = true;
         isRest = false;
         hasPlayedWarning = false;
@@ -295,8 +295,8 @@ window.addEventListener("DOMContentLoaded", () => {
             timeRemaining = warmUpDuration;
         } else {
             isWarmUp = false;
-            currentStep = 1;
-            timeRemaining = stepDuration;
+            currentSet = 1;
+            timeRemaining = setDuration;
         }
 
         document.getElementById("setupSection").classList.add("hidden");
@@ -314,8 +314,8 @@ window.addEventListener("DOMContentLoaded", () => {
                 if (isWarmUp) {
                     playBeep(1200, 500);
                     isWarmUp = false;
-                    currentStep = 1;
-                    timeRemaining = stepDuration;
+                    currentSet = 1;
+                    timeRemaining = setDuration;
                     countdownBeeps.clear();
 
                     setTimeout(() => {
@@ -324,16 +324,16 @@ window.addEventListener("DOMContentLoaded", () => {
                 } else if (isRest) {
                     playBeep(1200, 500);
                     isRest = false;
-                    currentStep++;
-                    timeRemaining = stepDuration;
+                    currentSet++;
+                    timeRemaining = setDuration;
                     hasPlayedWarning = false;
                     countdownBeeps.clear();
                 } else {
                     playBeep(1200, 500);
 
-                    if (currentStep < totalSteps) {
+                    if (currentSet < totalSets) {
                         // Check if we should start a rest period
-                        if (restEnabled && currentStep < totalSteps) {
+                        if (restEnabled && currentSet < totalSets) {
                             isRest = true;
                             timeRemaining = restDuration;
                             hasPlayedWarning = false;
@@ -341,26 +341,26 @@ window.addEventListener("DOMContentLoaded", () => {
 
                             document
                                 .getElementById("timerDisplay")
-                                .classList.add("step-complete");
+                                .classList.add("set-complete");
                             setTimeout(() => {
                                 document
                                     .getElementById("timerDisplay")
-                                    .classList.remove("step-complete");
+                                    .classList.remove("set-complete");
                             }, 1000);
                         } else {
-                            // No rest, go directly to next step
-                            currentStep++;
-                            timeRemaining = stepDuration;
+                            // No rest, go directly to next set
+                            currentSet++;
+                            timeRemaining = setDuration;
                             hasPlayedWarning = false;
                             countdownBeeps.clear();
 
                             document
                                 .getElementById("timerDisplay")
-                                .classList.add("step-complete");
+                                .classList.add("set-complete");
                             setTimeout(() => {
                                 document
                                     .getElementById("timerDisplay")
-                                    .classList.remove("step-complete");
+                                    .classList.remove("set-complete");
                             }, 1000);
                         }
                     } else {
@@ -378,7 +378,7 @@ window.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => playBeep(1000, 200), 300);
         setTimeout(() => playBeep(1200, 400), 600);
 
-        document.getElementById("currentStep").textContent = "Workout Complete!";
+        document.getElementById("currentSet").textContent = "Workout Complete!";
         document.getElementById("timeDisplay").textContent = "DONE";
         document.getElementById("progressInfo").textContent = "Great job! 🎉";
         document.getElementById("progressFill").style.width = "100%";
@@ -399,7 +399,7 @@ window.addEventListener("DOMContentLoaded", () => {
     function resetTimer() {
         isRunning = false;
         isWarmUp = false;
-        currentStep = 0;
+        currentSet = 0;
         timeRemaining = 0;
         hasPlayedWarning = false;
         countdownBeeps.clear();
@@ -408,9 +408,9 @@ window.addEventListener("DOMContentLoaded", () => {
         document.getElementById("stopBtn").classList.add("hidden");
         document
             .getElementById("timerDisplay")
-            .classList.remove("warning", "step-complete", "all-complete", "warm-up");
+            .classList.remove("warning", "set-complete", "all-complete", "warm-up");
 
-        document.getElementById("currentStep").textContent = "Ready to Start";
+        document.getElementById("currentSet").textContent = "Ready to Start";
         document.getElementById("timeDisplay").textContent = "00:00";
         document.getElementById("progressInfo").textContent = "";
         document.getElementById("progressFill").style.width = "0%";

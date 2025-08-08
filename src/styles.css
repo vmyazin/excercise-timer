@@ -494,9 +494,9 @@ input[type="number"]:focus {
 }
 
 
-/* Current step indicator */
+/* Current set indicator */
 
-.current-step {
+.current-set {
     font-size: 24px;
     color: var(--text-primary);
     margin-bottom: 8px;
@@ -577,7 +577,7 @@ input[type="number"]:focus {
 
 /* Timer states with macOS colors */
 
-.step-complete {
+.set-complete {
     background: linear-gradient(135deg, #e3f2e7 0%, #d4e8d9 100%) !important;
     border-color: rgba(52, 199, 89, 0.2) !important;
 }
@@ -597,7 +597,7 @@ input[type="number"]:focus {
     border-color: rgba(52, 199, 89, 0.3) !important;
 }
 
-.all-complete .current-step {
+.all-complete .current-set {
     color: var(--accent-green);
 }
 
@@ -677,7 +677,7 @@ textarea {
     .progress-bar {
         background: rgba(255, 255, 255, 0.1);
     }
-    .step-complete {
+    .set-complete {
         background: linear-gradient(135deg, rgba(48, 209, 88, 0.1) 0%, rgba(48, 209, 88, 0.15) 100%) !important;
         border-color: rgba(48, 209, 88, 0.3) !important;
     }
@@ -719,7 +719,7 @@ textarea {
     .time-display {
         font-size: 48px;
     }
-    .current-step {
+    .current-set {
         font-size: 20px;
     }
     .button {
