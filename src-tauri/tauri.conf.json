@@ -11,7 +11,7 @@
         "windows": [{
             "title": "Exercise Timer",
             "width": 580,
-            "height": 740,
+            "height": 800,
             "resizable": false,
             "center": true
         }],
