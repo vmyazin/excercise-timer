@@ -261,6 +261,21 @@ window.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function setStopButtonMode(isNewWorkout) {
+        const stopBtn = document.getElementById("stopBtn");
+        if (!stopBtn) return;
+        const textSpan = stopBtn.querySelector('.button-text');
+        if (isNewWorkout) {
+            stopBtn.classList.remove('stop-btn');
+            stopBtn.classList.add('start-btn');
+            if (textSpan) textSpan.textContent = 'New Workout';
+        } else {
+            stopBtn.classList.remove('start-btn');
+            stopBtn.classList.add('stop-btn');
+            if (textSpan) textSpan.textContent = 'Stop Timer';
+        }
+    }
+
     function startTimer() {
         const setsInput = document.getElementById("sets");
         const durationInput = document.getElementById("duration");
@@ -298,6 +313,9 @@ window.addEventListener("DOMContentLoaded", () => {
             currentSet = 1;
             timeRemaining = setDuration;
         }
+
+        // Ensure Stop button is default red mode on start
+        setStopButtonMode(false);
 
         document.getElementById("setupSection").classList.add("hidden");
         document.getElementById("stopBtn").classList.remove("hidden");
@@ -384,9 +402,8 @@ window.addEventListener("DOMContentLoaded", () => {
         document.getElementById("progressFill").style.width = "100%";
         document.getElementById("timerDisplay").classList.add("all-complete");
 
-        setTimeout(() => {
-            resetTimer();
-        }, 3000);
+        // Swap Stop -> New Workout (blue) and wait for user input
+        setStopButtonMode(true);
     }
 
     function stopTimer() {
@@ -414,6 +431,9 @@ window.addEventListener("DOMContentLoaded", () => {
         document.getElementById("timeDisplay").textContent = "00:00";
         document.getElementById("progressInfo").textContent = "";
         document.getElementById("progressFill").style.width = "0%";
+
+        // Restore Stop button default (red) for next run
+        setStopButtonMode(false);
 
         // Re-render preview after reset in case user changes presets
         renderUpcomingExcercisesPreview();

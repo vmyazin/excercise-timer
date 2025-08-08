@@ -1,3 +1,4 @@
+// src-ts/components/timer/Timer.ts
 import type { TimerState, TimerConfig, TimerEventType } from '../../types/timer.js';
 import { AudioManager } from './AudioManager.js';
 import { TimerDisplayController } from './TimerDisplay.js';
@@ -148,9 +149,8 @@ export class Timer {
     this.audioManager.playWorkoutComplete();
     this.display.showWorkoutComplete();
 
-    setTimeout(() => {
-      this.reset();
-    }, 3000);
+    // Replace Stop button with New Workout (blue) and wait for user action
+    this.setStopButtonMode(true);
   }
 
   public stop(): void {
@@ -175,9 +175,14 @@ export class Timer {
     this.showSetupSection();
     this.display.reset();
     this.display.renderUpcomingExcercisesPreview(this.activeExcerciseNames);
+
+    // Restore Stop button appearance for next run
+    this.setStopButtonMode(false);
   }
 
   private showTimerSection(): void {
+    // Ensure Stop button is in default (red) mode when starting
+    this.setStopButtonMode(false);
     document.getElementById("setupSection")?.classList.add("hidden");
     document.getElementById("stopBtn")?.classList.remove("hidden");
   }
@@ -185,6 +190,22 @@ export class Timer {
   private showSetupSection(): void {
     document.getElementById("setupSection")?.classList.remove("hidden");
     document.getElementById("stopBtn")?.classList.add("hidden");
+  }
+
+  private setStopButtonMode(isNewWorkout: boolean): void {
+    const stopBtn = document.getElementById("stopBtn");
+    if (!stopBtn) return;
+    const textSpan = stopBtn.querySelector('.button-text') as HTMLElement | null;
+
+    if (isNewWorkout) {
+      stopBtn.classList.remove('stop-btn');
+      stopBtn.classList.add('start-btn');
+      if (textSpan) textSpan.textContent = 'New Workout';
+    } else {
+      stopBtn.classList.remove('start-btn');
+      stopBtn.classList.add('stop-btn');
+      if (textSpan) textSpan.textContent = 'Stop Timer';
+    }
   }
 
   public getState(): Readonly<TimerState> {
