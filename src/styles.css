@@ -49,6 +49,7 @@ body {
     background: var(--bg-primary);
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 20px;
@@ -497,6 +498,24 @@ textarea {
     -ms-user-select: text;
     user-select: text;
     -webkit-touch-callout: default;
+}
+
+
+/* App footer */
+
+.app-footer {
+    margin-top: 20px;
+    text-align: center;
+    width: 100%;
+}
+
+.footer-text {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin: 0;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+    opacity: 0.7;
 }
 
 
