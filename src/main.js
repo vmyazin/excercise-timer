@@ -22,7 +22,7 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 // Timer logic extracted from index.html
-(function attachExerciseTimer() {
+(function attachExcerciseTimer() {
     let timerInterval;
     let currentStep = 0;
     let timeRemaining = 0;
@@ -48,7 +48,7 @@ window.addEventListener("DOMContentLoaded", () => {
         "Standing hip openers (slow knee circles)"
     ];
 
-    let activeExerciseNames = null; // null means manual/custom mode
+    let activeExcerciseNames = null; // null means manual/custom mode
 
     // Add event listeners for checkbox and warmup duration and presets
     window.addEventListener("DOMContentLoaded", () => {
@@ -77,17 +77,17 @@ window.addEventListener("DOMContentLoaded", () => {
             presetSelect.addEventListener("change", (e) => {
                 const value = e.target.value;
                 if (value === "presetWorkout") {
-                    activeExerciseNames = [...presetWorkout];
-                    stepsInput.value = String(activeExerciseNames.length);
+                    activeExcerciseNames = [...presetWorkout];
+                    stepsInput.value = String(activeExcerciseNames.length);
                 } else {
-                    activeExerciseNames = null; // custom mode
+                    activeExcerciseNames = null; // custom mode
                 }
-                renderUpcomingExercisesPreview();
+                renderUpcomingExcercisesPreview();
             });
         }
 
         // Initialize preview state on load
-        renderUpcomingExercisesPreview();
+        renderUpcomingExcercisesPreview();
     });
 
     function initAudio() {
@@ -121,16 +121,16 @@ window.addEventListener("DOMContentLoaded", () => {
       .padStart(2, "0")}`;
     }
 
-    function getCurrentExerciseName() {
-        if (!activeExerciseNames || isWarmUp || currentStep <= 0) return null;
+    function getCurrentExcerciseName() {
+        if (!activeExcerciseNames || isWarmUp || currentStep <= 0) return null;
         const index = currentStep - 1; // steps are 1-indexed in UI
-        if (index >= 0 && index < activeExerciseNames.length) {
-            return activeExerciseNames[index];
+        if (index >= 0 && index < activeExcerciseNames.length) {
+            return activeExcerciseNames[index];
         }
         return null;
     }
 
-    function renderUpcomingExercisesPreview() {
+    function renderUpcomingExcercisesPreview() {
         // For now, we reuse #progressInfo during setup to show the list
         const progressInfoEl = document.getElementById("progressInfo");
         const setupSection = document.getElementById("setupSection");
@@ -139,8 +139,8 @@ window.addEventListener("DOMContentLoaded", () => {
         const isSetupVisible = !setupSection.classList.contains("hidden");
         if (!isSetupVisible) return;
 
-        if (activeExerciseNames && activeExerciseNames.length) {
-            progressInfoEl.textContent = `Preset loaded: ${activeExerciseNames.length} steps`;
+        if (activeExcerciseNames && activeExcerciseNames.length) {
+            progressInfoEl.textContent = `Preset loaded: ${activeExcerciseNames.length} steps`;
         } else {
             progressInfoEl.textContent = "";
         }
@@ -160,12 +160,12 @@ window.addEventListener("DOMContentLoaded", () => {
             progressInfoEl.textContent = "Get ready to start!";
             timerDisplayEl.classList.add("warm-up");
         } else {
-            const exerciseName = getCurrentExerciseName();
-            currentStepEl.textContent = exerciseName ?
-                `${exerciseName}` :
+            const excerciseName = getCurrentExcerciseName();
+            currentStepEl.textContent = excerciseName ?
+                `${excerciseName}` :
                 `Step ${currentStep} of ${totalSteps}`;
             const remainingSteps = Math.max(totalSteps - currentStep, 0);
-            const suffix = activeExerciseNames && !exerciseName ? " (custom)" : "";
+            const suffix = activeExcerciseNames && !excerciseName ? " (custom)" : "";
             progressInfoEl.textContent = `${remainingSteps} steps remaining${suffix}`;
             timerDisplayEl.classList.remove("warm-up");
         }
@@ -196,7 +196,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const warmupDurationInput = document.getElementById("warmupDuration");
 
         // If a preset is active, respect its length for total steps
-        const presetSteps = activeExerciseNames ? activeExerciseNames.length : null;
+        const presetSteps = activeExcerciseNames ? activeExcerciseNames.length : null;
 
         totalSteps = parseInt(stepsInput.value);
         stepDuration = parseInt(durationInput.value);
@@ -314,7 +314,7 @@ window.addEventListener("DOMContentLoaded", () => {
         document.getElementById("progressFill").style.width = "0%";
 
         // Re-render preview after reset in case user changes presets
-        renderUpcomingExercisesPreview();
+        renderUpcomingExcercisesPreview();
     }
 
     document.addEventListener("click", initAudio, { once: true });

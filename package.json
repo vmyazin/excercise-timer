@@ -1,12 +1,17 @@
 {
-  "name": "excercise-timer",
-  "private": true,
-  "version": "0.1.0",
-  "type": "module",
-  "scripts": {
-    "tauri": "tauri"
-  },
-  "devDependencies": {
-    "@tauri-apps/cli": "^2"
-  }
+    "name": "excercise-timer",
+    "private": true,
+    "version": "0.1.0",
+    "type": "module",
+    "scripts": {
+        "build": "tsc && cp src/index.html src/styles.css dist/",
+        "dev": "tsc --watch",
+        "tauri": "tauri",
+        "tauri:dev": "npm run build && tauri dev"
+    },
+    "devDependencies": {
+        "@tauri-apps/cli": "^2",
+        "@types/web": "^0.0.99",
+        "typescript": "^5.0.0"
+    }
 }

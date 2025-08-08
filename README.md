@@ -1,6 +1,6 @@
 <!-- excercise-timer/README.md -->
 
-# Exercise Timer
+# Excercise Timer
 
 A simple desktop interval timer built with Tauri and vanilla HTML/CSS/JavaScript. Configure the number of steps and the duration per step to guide structured workouts or practice sessions.
 
