@@ -20,10 +20,12 @@
                 <div class="form-group">
                     <div class="input-group">
                         <label for="presetSelect">Preset:</label>
-                        <select id="presetSelect" class="input-field preset-select">
-                            <option value="custom" class="preset-option">Custom (manual)</option>
-                            <option value="presetWorkout" class="preset-option">Preset Workout (8)</option>
-                        </select>
+                        <div id="presetSelectContainer" class="preset-select-container">
+                            <select id="presetSelect" class="input-field preset-select" style="display: none;">
+                                <option value="custom" class="preset-option">Custom (manual)</option>
+                                <option value="presetWorkout" class="preset-option">Preset Workout (8)</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="input-group">
                         <label for="steps">Number of Steps:</label>

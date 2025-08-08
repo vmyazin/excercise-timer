@@ -1,8 +1,11 @@
+// src-ts/components/presets/PresetManager.ts
 import type { PresetWorkout, PresetMode, PresetState } from '../../types/preset.js';
+import { PresetSelect } from '../ui/PresetSelect.js';
 
 export class PresetManager {
   private state: PresetState;
   private presetWorkouts: Record<string, PresetWorkout>;
+  private presetSelect: PresetSelect | null = null;
 
   constructor() {
     this.state = {
@@ -28,14 +31,39 @@ export class PresetManager {
   }
 
   public initialize(): void {
-    const presetSelect = document.getElementById("presetSelect") as HTMLSelectElement;
     const stepsInput = document.getElementById("steps") as HTMLInputElement;
 
-    if (presetSelect) {
-      presetSelect.addEventListener("change", (e) => {
-        const target = e.target as HTMLSelectElement;
-        this.handlePresetChange(target.value as PresetMode, stepsInput);
+    // Initialize custom preset select component
+    try {
+      this.presetSelect = new PresetSelect("presetSelectContainer", {
+        presets: [
+          { 
+            value: 'custom', 
+            label: 'Default', 
+            description: 'Set your own steps and duration' 
+          },
+          { 
+            value: 'presetWorkout', 
+            label: 'Preset Workout (8)', 
+            description: '8 bodyweight exercises' 
+          }
+        ],
+        defaultValue: 'custom',
+        onChange: (value: string) => {
+          this.handlePresetChange(value as PresetMode, stepsInput);
+        }
       });
+    } catch (error) {
+      console.error('Failed to initialize custom preset select:', error);
+      // Fallback to original select
+      const originalSelect = document.getElementById("presetSelect") as HTMLSelectElement;
+      if (originalSelect) {
+        originalSelect.style.display = 'block';
+        originalSelect.addEventListener("change", (e) => {
+          const target = e.target as HTMLSelectElement;
+          this.handlePresetChange(target.value as PresetMode, stepsInput);
+        });
+      }
     }
   }
 

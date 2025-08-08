@@ -50,12 +50,13 @@ window.addEventListener("DOMContentLoaded", () => {
 
     let activeExcerciseNames = null; // null means manual/custom mode
 
+    // Initialize custom preset select component
+    let presetSelectComponent = null;
+
     // Add event listeners for checkbox and warmup duration and presets
     window.addEventListener("DOMContentLoaded", () => {
         const enableWarmupCheckbox = document.getElementById("enableWarmup");
-        const warmupDurationInput = document.getElementById("warmupDuration");
         const warmupDurationWrapper = document.querySelector(".warmup-duration-wrapper");
-        const presetSelect = document.getElementById("presetSelect");
         const stepsInput = document.getElementById("steps");
 
         // Initialize warmup duration state
@@ -72,18 +73,49 @@ window.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        // Handle preset selection
-        if (presetSelect) {
-            presetSelect.addEventListener("change", (e) => {
-                const value = e.target.value;
-                if (value === "presetWorkout") {
-                    activeExcerciseNames = [...presetWorkout];
-                    stepsInput.value = String(activeExcerciseNames.length);
-                } else {
-                    activeExcerciseNames = null; // custom mode
+        // Initialize custom preset select with fallback
+        try {
+            presetSelectComponent = new PresetSelect("presetSelectContainer", {
+                presets: [
+                    { 
+                        value: 'custom', 
+                        label: 'Custom (manual)', 
+                        description: 'Set your own steps and duration' 
+                    },
+                    { 
+                        value: 'presetWorkout', 
+                        label: 'Preset Workout (8)', 
+                        description: '8 bodyweight exercises' 
+                    }
+                ],
+                defaultValue: 'custom',
+                onChange: (value) => {
+                    if (value === "presetWorkout") {
+                        activeExcerciseNames = [...presetWorkout];
+                        stepsInput.value = String(activeExcerciseNames.length);
+                    } else {
+                        activeExcerciseNames = null; // custom mode
+                    }
+                    renderUpcomingExcercisesPreview();
                 }
-                renderUpcomingExcercisesPreview();
             });
+        } catch (error) {
+            console.error('Failed to initialize custom preset select:', error);
+            // Fallback to original select
+            const originalSelect = document.getElementById("presetSelect");
+            if (originalSelect) {
+                originalSelect.style.display = 'block';
+                originalSelect.addEventListener("change", (e) => {
+                    const value = e.target.value;
+                    if (value === "presetWorkout") {
+                        activeExcerciseNames = [...presetWorkout];
+                        stepsInput.value = String(activeExcerciseNames.length);
+                    } else {
+                        activeExcerciseNames = null; // custom mode
+                    }
+                    renderUpcomingExcercisesPreview();
+                });
+            }
         }
 
         // Initialize preview state on load
@@ -315,6 +347,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
         // Re-render preview after reset in case user changes presets
         renderUpcomingExcercisesPreview();
+        
+        // Reset preset select if needed
+        if (presetSelectComponent) {
+            presetSelectComponent.close();
+        }
     }
 
     document.addEventListener("click", initAudio, { once: true });
