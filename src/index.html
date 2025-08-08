@@ -29,12 +29,24 @@
                     </div>
                     <div class="input-group">
                         <label for="steps">Number of Steps:</label>
-                        <input type="number" id="steps" value="5" min="1" max="20" class="input-field">
+                        <div class="number-input-wrapper">
+                            <input type="number" id="steps" value="5" min="1" max="20" class="input-field">
+                            <div class="custom-controls">
+                                <button type="button" class="control-btn decrement" data-target="steps"></button>
+                                <button type="button" class="control-btn increment" data-target="steps"></button>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="input-group">
                         <label for="duration">Duration (seconds):</label>
-                        <input type="number" id="duration" value="30" min="5" max="300" class="input-field">
+                        <div class="number-input-wrapper">
+                            <input type="number" id="duration" value="30" min="5" max="300" class="input-field">
+                            <div class="custom-controls">
+                                <button type="button" class="control-btn decrement" data-target="duration"></button>
+                                <button type="button" class="control-btn increment" data-target="duration"></button>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="input-group checkbox-group">
@@ -43,8 +55,13 @@
                             <span class="checkbox-text">Enable warm-up</span>
                         </label>
                         <div class="warmup-duration-wrapper">
-                            <input type="number" id="warmupDuration" value="10" min="3" max="30" class="input-field warmup-duration">
-                            <span class="duration-label">sec</span>
+                            <div class="number-input-wrapper">
+                                <input type="number" id="warmupDuration" value="10" min="3" max="30" class="input-field warmup-duration">
+                                <div class="custom-controls">
+                                    <button type="button" class="control-btn decrement" data-target="warmupDuration"></button>
+                                    <button type="button" class="control-btn increment" data-target="warmupDuration"></button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -54,8 +71,13 @@
                             <span class="checkbox-text">Enable rest between steps</span>
                         </label>
                         <div class="rest-duration-wrapper">
-                            <input type="number" id="restDuration" value="5" min="5" max="60" class="input-field rest-duration">
-                            <span class="duration-label">sec</span>
+                            <div class="number-input-wrapper">
+                                <input type="number" id="restDuration" value="5" min="5" max="60" class="input-field rest-duration">
+                                <div class="custom-controls">
+                                    <button type="button" class="control-btn decrement" data-target="restDuration"></button>
+                                    <button type="button" class="control-btn increment" data-target="restDuration"></button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

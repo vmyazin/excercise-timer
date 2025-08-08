@@ -1,3 +1,4 @@
+// src-ts/components/ui/FormController.ts
 import type { TimerConfig } from '../../types/timer.js';
 
 export class FormController {
@@ -24,6 +25,7 @@ export class FormController {
   public initialize(): void {
     this.initializeWarmupToggle();
     this.initializeRestToggle();
+    this.initializeCustomControls();
   }
 
   private initializeWarmupToggle(): void {
@@ -91,5 +93,41 @@ export class FormController {
     }
     
     return true;
+  }
+
+  private initializeCustomControls(): void {
+    const controlButtons = document.querySelectorAll('.control-btn');
+    
+    controlButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        const inputId = target.getAttribute('data-target');
+        const isIncrement = target.classList.contains('increment');
+        
+        if (inputId) {
+          const input = document.getElementById(inputId) as HTMLInputElement;
+          if (input) {
+            this.adjustInputValue(input, isIncrement);
+          }
+        }
+      });
+    });
+  }
+
+  private adjustInputValue(input: HTMLInputElement, increment: boolean): void {
+    const currentValue = parseInt(input.value) || 0;
+    const min = parseInt(input.min) || 0;
+    const max = parseInt(input.max) || Infinity;
+    const step = parseInt(input.step) || 1;
+    
+    let newValue = increment ? currentValue + step : currentValue - step;
+    
+    // Respect min/max bounds
+    newValue = Math.max(min, Math.min(max, newValue));
+    
+    input.value = newValue.toString();
+    
+    // Trigger change event to notify other components
+    input.dispatchEvent(new Event('change', { bubbles: true }));
   }
 }
