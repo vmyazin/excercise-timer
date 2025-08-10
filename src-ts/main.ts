@@ -44,6 +44,10 @@ class ExcerciseTimerApp {
     (window as any).stopTimer = () => {
       this.timer.stop();
     };
+
+    (window as any).skipStep = () => {
+      this.timer.skip();
+    };
   }
 }
 

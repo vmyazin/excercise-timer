@@ -113,6 +113,13 @@ body {
     gap: 8px;
 }
 
+/* Actions under the timer (Skip / Stop) */
+.timer-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* space between Skip and Stop buttons */
+}
+
 
 /* Timer content wrapper */
 

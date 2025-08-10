@@ -100,10 +100,14 @@
                         <div class="progress-info" id="progressInfo"></div>
                     </div>
                 </div>
-
-                <button class="button stop-btn hidden" id="stopBtn" onclick="stopTimer()">
-                    <span class="button-text">Stop Timer</span>
-                </button>
+                <div class="timer-actions">
+                    <button class="button hidden" id="skipBtn" onclick="skipStep()">
+                        <span class="button-text">Skip Step</span>
+                    </button>
+                    <button class="button stop-btn hidden" id="stopBtn" onclick="stopTimer()">
+                        <span class="button-text">Stop Timer</span>
+                    </button>
+                </div>
             </section>
         </main>
     </div>

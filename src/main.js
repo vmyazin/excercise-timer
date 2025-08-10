@@ -319,6 +319,8 @@ window.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("setupSection").classList.add("hidden");
         document.getElementById("stopBtn").classList.remove("hidden");
+        const skipBtn = document.getElementById("skipBtn");
+        if (skipBtn) skipBtn.classList.remove("hidden");
 
         initAudio();
 
@@ -423,6 +425,8 @@ window.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("setupSection").classList.remove("hidden");
         document.getElementById("stopBtn").classList.add("hidden");
+        const skipBtn = document.getElementById("skipBtn");
+        if (skipBtn) skipBtn.classList.add("hidden");
         document
             .getElementById("timerDisplay")
             .classList.remove("warning", "set-complete", "all-complete", "warm-up");
@@ -446,6 +450,64 @@ window.addEventListener("DOMContentLoaded", () => {
 
     document.addEventListener("click", initAudio, { once: true });
 
+    function skipStep() {
+        // If in warm-up, jump to first set
+        if (isWarmUp && isRunning) {
+            isWarmUp = false;
+            currentSet = 1;
+            timeRemaining = setDuration;
+            countdownBeeps.clear();
+            updateDisplay();
+            return;
+        }
+
+        // If resting, jump into next set
+        if (isRest && isRunning) {
+            isRest = false;
+            currentSet++;
+            timeRemaining = setDuration;
+            countdownBeeps.clear();
+            updateDisplay();
+            return;
+        }
+
+        // If in a set, end it now (respect rest setting)
+        if (isRunning && currentSet > 0) {
+            if (currentSet < totalSets) {
+                if (restEnabled) {
+                    isRest = true;
+                    timeRemaining = restDuration;
+                    countdownBeeps.clear();
+                    document
+                        .getElementById("timerDisplay")
+                        .classList.add("set-complete");
+                    setTimeout(() => {
+                        document
+                            .getElementById("timerDisplay")
+                            .classList.remove("set-complete");
+                    }, 1000);
+                } else {
+                    currentSet++;
+                    timeRemaining = setDuration;
+                    countdownBeeps.clear();
+                    document
+                        .getElementById("timerDisplay")
+                        .classList.add("set-complete");
+                    setTimeout(() => {
+                        document
+                            .getElementById("timerDisplay")
+                            .classList.remove("set-complete");
+                    }, 1000);
+                }
+                updateDisplay();
+            } else {
+                // If already at last set, complete workout
+                completeTimer();
+            }
+        }
+    }
+
     window.startTimer = startTimer;
     window.stopTimer = stopTimer;
+    window.skipStep = skipStep;
 })();

@@ -148,6 +148,9 @@ export class Timer {
     this.audioManager.playWorkoutComplete();
     this.display.showWorkoutComplete();
 
+    // Hide skip on completion
+    document.getElementById("skipBtn")?.classList.add("hidden");
+
     // Replace Stop button with New Workout (blue) and wait for user action
     this.setStopButtonMode(true);
   }
@@ -183,11 +186,13 @@ export class Timer {
     this.setStopButtonMode(false);
     document.getElementById("setupSection")?.classList.add("hidden");
     document.getElementById("stopBtn")?.classList.remove("hidden");
+    document.getElementById("skipBtn")?.classList.remove("hidden");
   }
 
   private showSetupSection(): void {
     document.getElementById("setupSection")?.classList.remove("hidden");
     document.getElementById("stopBtn")?.classList.add("hidden");
+    document.getElementById("skipBtn")?.classList.add("hidden");
   }
 
   private setStopButtonMode(isNewWorkout: boolean): void {
@@ -208,5 +213,36 @@ export class Timer {
 
   public getState(): Readonly<TimerState> {
     return { ...this.state };
+  }
+
+  public skip(): void {
+    // Only allow skipping when running
+    if (!this.state.isRunning) return;
+
+    // If in warm-up, skip to first set
+    if (this.state.isWarmUp) {
+      this.state.isWarmUp = false;
+      this.state.currentSet = 1;
+      this.state.timeRemaining = this.state.setDuration;
+      this.countdownBeeps.clear();
+      this.display.updateDisplay(this.state, this.activeExcerciseNames);
+      return;
+    }
+
+    // If resting, skip to next set work
+    if (this.state.isRest) {
+      this.completeRest();
+      this.display.updateDisplay(this.state, this.activeExcerciseNames);
+      return;
+    }
+
+    // If doing a set, complete it immediately
+    if (this.state.currentSet > 0) {
+      // Emulate end-of-set flow
+      this.state.timeRemaining = 0;
+      this.completeSet();
+      this.display.updateDisplay(this.state, this.activeExcerciseNames);
+      return;
+    }
   }
 }
