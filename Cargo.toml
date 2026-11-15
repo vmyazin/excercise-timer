@@ -1,0 +1,18 @@
+[package]
+name = "exercise-timer"
+version = "0.2.0"
+edition = "2024"
+rust-version = "1.92"
+description = "An offline interval workout timer for macOS"
+authors = ["Simon at Smoxu"]
+
+[dependencies]
+eframe = { version = "0.33", default-features = false, features = ["accesskit", "default_fonts", "wgpu"] }
+rodio = { version = "0.21", default-features = false, features = ["playback"] }
+# eframe with default features disabled does not select a native GPU backend.
+wgpu = { version = "27", default-features = false, features = ["metal"] }
+
+[profile.release]
+lto = "thin"
+strip = true
+codegen-units = 1

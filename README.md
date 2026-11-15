@@ -1,54 +1,49 @@
-<!-- excercise-timer/README.md -->
+# Exercise Timer
 
-# Excercise Timer
+A standalone Rust interval timer for macOS 12 or newer. The interface uses egui/eframe with GPU rendering; audio is synthesized locally with Rodio. There is no webview, JavaScript, Node.js, or network dependency at runtime.
 
-A simple desktop interval timer built with Tauri and vanilla HTML/CSS/JavaScript. Configure the number of sets and the duration per set to guide structured workouts or practice sessions.
+- Custom workouts: 1–20 sets, 5–300 seconds per set.
+- Optional warm-up (5–30 seconds) and rest between sets (5–60 seconds).
+- Eight-exercise bodyweight preset with exercise names and a preview.
+- Audible 3–2–1 countdown, interval chime, completion melody, and a mute control.
+- Skip, stop, and start a new workout; Escape stops and Command-Q quits.
+- Timer and audio continue while minimized. Active workouts prevent idle system sleep. Avoid explicit system sleep during a workout; closing the app discards the session.
 
-## What this app is for
-- Quick, focused interval workouts (e.g., 10 sets × 30 seconds)
-- Pomodoro-style sprints or rehearsal reps
-- Any task broken into equal-length sets with an audible and visual guide
+## Develop
 
-## How it works
-- 5‑second warm‑up countdown before the first set starts
-- For each set:
-  - Big time display and progress bar
-  - Audible countdown beeps at 3, 2, 1 seconds remaining
-  - Chime when a set completes and the next set begins
-- Final completion plays a short celebratory chime sequence
-- A Stop button lets you cancel and reset at any time
+Install [Rust with rustup](https://rustup.rs/) and Xcode Command Line Tools (`xcode-select --install`). The repository pins its Rust toolchain in `rust-toolchain.toml`.
 
-## Features
-- Configure number of sets (1–20)
-- Configure set duration (5–300 seconds)
-- Visual progress with warning pulse in the final seconds
-- Works fully offline; no data is sent anywhere
-
-## Getting started
-### Prerequisites
-- Node.js 18+ and npm
-- Rust and Cargo
-- Tauri system prerequisites for your OS (see Tauri docs)
-
-### Install
-```bash
-npm install
+```sh
+cargo run
+cargo fmt --all --check
+cargo clippy --locked --all-targets -- -D warnings
+cargo test --locked --all-targets
 ```
 
-### Run in development
-```bash
-npm run tauri dev
+Settings are session-only, matching the original app. Without an audio device the visual timer still works, and the interface reports that sound is unavailable.
+
+## Package for macOS
+
+```sh
+# Universal app, ZIP, and DMG for Apple Silicon and Intel
+scripts/build-macos.sh --universal
+
+# Faster local Apple Silicon build
+scripts/build-macos.sh --target aarch64-apple-darwin
 ```
 
-### Build a release app
-```bash
-npm run tauri build
-```
+Artifacts are written to `dist/macos/<architecture>/`. Local builds are ad-hoc signed and labeled `unnotarized`. For public distribution, use your Developer ID certificate and Apple's notarization service as described in [CODE_SIGNING.md](CODE_SIGNING.md). See [DISTRIBUTION.md](DISTRIBUTION.md) for installation and verification.
 
-## Project structure
-- `src/`: UI (HTML/CSS/JS) for the timer interface
-- `src-tauri/`: Tauri Rust backend and configuration
+## Source layout
 
-## Notes
-- Built with Tauri 2 and vanilla web technologies
-- Designed to be simple, focused, and distraction-free
+| Path | Responsibility |
+| --- | --- |
+| `src/timer.rs` | Validated configuration and deterministic workout state machine with unit tests |
+| `src/runtime.rs` | Background clock, command handling, and idle-sleep assertion |
+| `src/ui.rs` | Rust desktop interface and input |
+| `src/audio.rs` | Synthesized countdown and completion cues |
+| `assets/` | Original application icons |
+| `scripts/build-macos.sh` | Universal builds, bundle metadata, signing, notarization, ZIP, DMG, checksums |
+| `.github/workflows/macos.yml` | Formatting, linting, tests, universal package artifacts |
+
+This replaces the previous Tauri/TypeScript implementation. The bundle identifier `com.vm.excercise-timer` is retained for continuity; the displayed app name is corrected to **Exercise Timer**. No App Store submission or automatic updater is configured.

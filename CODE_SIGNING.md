@@ -1,68 +1,70 @@
-# Code Signing Guide (Optional Enhancement)
+# Developer ID signing and notarization
 
-## Current Status
-✅ **App builds and runs perfectly**  
-⚠️ **Not code signed** - Users will see security warnings on first launch  
+The packaging script supports distribution outside the Mac App Store. Public releases require your Apple Developer credentials; they are not included in this repository. Local builds use an ad-hoc signature and remain unnotarized.
 
-## Why Code Signing Matters
-- Eliminates "Developer cannot be verified" warnings
-- Builds user trust and confidence
-- Required for Mac App Store distribution
-- Enables automatic updates through app stores
+## This Mac
 
-## How to Add Code Signing (Future Enhancement)
+The local `.signing.local` file contains the selected Developer ID identity, Keychain profile name, and explicit Keychain path, with no password. It is ignored by Git. After storing notarization credentials, release from the repository root with:
 
-### 1. Get Apple Developer Account
-- Sign up at [developer.apple.com](https://developer.apple.com)
-- Cost: $99/year for individuals
-
-### 2. Create Certificates
-- Developer ID Application Certificate (for distribution outside App Store)
-- Developer ID Installer Certificate (for pkg installers)
-
-### 3. Update Tauri Configuration
-Add to `src-tauri/tauri.conf.json`:
-```json
-{
-  "bundle": {
-    "macOS": {
-      "signing": {
-        "identity": "Developer ID Application: Your Name (TEAM_ID)"
-      }
-    }
-  }
-}
+```sh
+source .signing.local
+scripts/build-macos.sh --universal --notarize
 ```
 
-### 4. Build with Signing
-```bash
-npm run tauri build
+Verify that the certificate and authentication are ready without displaying credentials:
+
+```sh
+security find-identity -v -p codesigning
+source .signing.local
+xcrun notarytool history --keychain-profile "$NOTARY_PROFILE" --keychain "$NOTARY_KEYCHAIN"
 ```
 
-### 5. Notarization (Recommended)
-- Upload to Apple for notarization
-- Eliminates all security warnings
-- Automatic with Xcode or altool
+The interactive setup helper in `dist/signing/Store-Notarization-Credentials.command` supplies this Mac's account and team ID. Open it in Terminal and enter the app-specific password only at its secure prompt. The helper and downloaded certificates are local, ignored build artifacts.
 
-## Current Workaround for Users
-Since the app isn't signed, users need to:
-1. Right-click the app → "Open"
-2. Click "Open" in the security dialog
-3. Or use System Preferences → Security & Privacy → "Open Anyway"
+For another Mac or CI, set `NOTARY_KEYCHAIN` when credentials are stored in a specific Keychain. The build script validates access to the profile before building whenever `--notarize` is requested.
 
-## Alternative: Self-Signing (Free)
-For development/testing purposes:
-```bash
-# Create self-signed certificate
-codesign --force --deep --sign - excercise-timer.app
+## One-time setup
+
+1. Install a **Developer ID Application** certificate and its private key in your login Keychain.
+2. Verify its exact name with `security find-identity -v -p codesigning`.
+3. Store notarization credentials interactively in Keychain:
+
+```sh
+xcrun notarytool store-credentials exercise-timer-notary
 ```
 
-⚠️ **Note**: Self-signing still shows warnings but may be slightly better than unsigned.
+Follow the prompts for your Apple ID, team ID, and app-specific password, or use the API-key flow documented by Apple. Do not commit credentials or put them in build scripts.
 
-## Is Code Signing Required?
-**No** - Your app works perfectly without it. Code signing is purely for:
-- Professional distribution
-- Eliminating user friction
-- App Store submission
+If the identity is present but not valid, check its certificate chain. Certificates issued by Developer ID G2 need Apple's [Developer ID G2 intermediate certificate](https://www.apple.com/certificateauthority/DeveloperIDG2CA.cer). Import that intermediate into Keychain without overriding trust settings.
 
-For friend-to-friend sharing, the current unsigned build is completely fine! 
+Keep a password-protected backup of the certificate **and its private key**, exported together as a `.p12` from Keychain Access. A downloaded `.cer` contains only the public certificate and cannot restore signing on another Mac by itself. Keep this backup outside the repository.
+
+## Build a release
+
+```sh
+SIGNING_IDENTITY='Developer ID Application: Your Name (TEAMID)' \
+NOTARY_PROFILE='exercise-timer-notary' \
+scripts/build-macos.sh --universal --notarize
+```
+
+The script enables the hardened runtime, timestamps the Developer ID signature, verifies the bundle, uploads an app ZIP with `notarytool`, checks that its status is `Accepted`, staples the app, and checks Gatekeeper. It then creates the distributable ZIP and DMG, signs/notarizes/staples the DMG, and generates SHA-256 checksums. No permissive runtime entitlements are requested.
+
+If a submission fails, use its ID from `dist/macos/universal/notarization-*.json`:
+
+```sh
+xcrun notarytool log SUBMISSION_ID --keychain-profile exercise-timer-notary
+```
+
+Never modify bundle contents after signing. Rebuild and notarize each new release. The script replaces matching versioned outputs only after successful verification; older artifacts may remain in the output directory, so select the intended version when uploading.
+
+## Final verification
+
+```sh
+codesign --verify --strict --verbose=2 'dist/macos/universal/Exercise Timer.app'
+xcrun stapler validate 'dist/macos/universal/Exercise Timer.app'
+spctl --assess --type execute --verbose=2 'dist/macos/universal/Exercise Timer.app'
+```
+
+Also validate the DMG ticket and test a downloaded copy on another Mac. An accepted notarization is not an App Store submission.
+
+References: [Apple: Developer ID](https://developer.apple.com/developer-id/), [Notarizing macOS software](https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution), [Customizing the notarization workflow](https://developer.apple.com/documentation/security/customizing-the-notarization-workflow).

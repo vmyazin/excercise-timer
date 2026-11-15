@@ -1,0 +1,31 @@
+name: macOS
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Rust toolchain
+        run: rustup show
+      - name: Format, lint, and test
+        run: |
+          cargo fmt --all --check
+          cargo clippy --locked --all-targets -- -D warnings
+          cargo test --locked --all-targets
+      - name: Build universal local-test packages
+        run: scripts/build-macos.sh --universal
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Exercise-Timer-universal-unnotarized
+          path: |
+            dist/macos/universal/*.dmg
+            dist/macos/universal/*.zip
+            dist/macos/universal/*.sha256
+          if-no-files-found: error

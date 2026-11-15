@@ -1,106 +1,36 @@
-# Exercise Timer - Distribution Guide
+# macOS distribution
 
-## For Your Friend (Easy Installation)
+## Build artifacts
 
-### Option 1: DMG Installer (Recommended)
-1. Download the `excercise-timer_0.1.0_aarch64.dmg` file
-2. Double-click the DMG file to mount it
-3. Drag the "Exercise Timer" app to your Applications folder
-4. Eject the DMG
-5. Launch "Exercise Timer" from Applications or Spotlight
+Run `scripts/build-macos.sh --universal` on macOS with Rust, Python 3, and Xcode Command Line Tools. The script installs the two Rust compilation targets, builds both architectures, and combines them with `lipo`. It uses the Cargo version for bundle metadata and archive names.
 
-### Option 2: Direct App Bundle
-1. Download the `excercise-timer.app` folder
-2. Copy it to your Applications folder
-3. Launch "Exercise Timer" from Applications or Spotlight
+Output in `dist/macos/universal/`:
 
-### Important Notes for macOS Security
-- **First Launch**: macOS may show a security warning because the app isn't signed by a verified developer
-- **If blocked**: Go to System Preferences → Security & Privacy → General, and click "Open Anyway" next to the Exercise Timer message
-- **Alternative**: Right-click the app and select "Open" from the context menu
+- `Exercise Timer.app`: standalone app bundle with the existing icon.
+- `Exercise-Timer-<version>-universal-unnotarized.dmg`: compressed disk image containing the app and an Applications shortcut.
+- `Exercise-Timer-<version>-universal-unnotarized.zip`: app archive preserving macOS metadata.
+- `Exercise-Timer-<version>-universal-unnotarized.sha256`: checksums for the ZIP and DMG.
 
-## What Your Friend Gets
+Use `--target aarch64-apple-darwin` or `--target x86_64-apple-darwin` to package a single architecture. Output goes into a separate directory for that target. macOS 12 is the configured minimum; test on the oldest supported macOS before publishing.
 
-✅ **Native macOS App**: Runs like any other Mac application  
-✅ **No Installation Required**: Just drag and drop  
-✅ **Offline Ready**: Works without internet connection  
-✅ **Small Size**: Only ~6MB download  
-✅ **Modern UI**: Beautiful macOS-native design with dark mode support  
+## Local validation
 
-## Distribution Files
-
-Located in: `src-tauri/target/release/bundle/`
-
-- **DMG**: `dmg/excercise-timer_0.1.0_aarch64.dmg` (6MB)
-- **App Bundle**: `macos/excercise-timer.app/` (folder)
-
-## Features Available
-
-- ⏱️ Customizable work and rest intervals
-- 🔄 Configurable number of rounds  
-- 🏃‍♂️ Optional warm-up period
-- 🔊 Audio notifications (ding sound)
-- 📊 Progress tracking with visual indicators
-- 🎨 Beautiful macOS-native interface
-- 🌙 Automatic dark mode support
-- ⚡ Preset workout configurations
-
-## System Requirements
-
-- **macOS**: 10.15 (Catalina) or later
-- **Architecture**: Apple Silicon (M1/M2/M3) or Intel
-- **Disk Space**: 20MB free space
-
-## Sharing Methods
-
-### Cloud Storage
-- Upload the DMG file to Google Drive, Dropbox, or iCloud
-- Share the download link with your friend
-
-### AirDrop (Local)
-- Select the DMG file in Finder
-- Use AirDrop to send directly to your friend's Mac
-
-### Email (if small enough)
-- The DMG is only 6MB, so it can be emailed directly
-
-### File Transfer Services
-- Use WeTransfer, SendAnywhere, or similar services
-
-## Troubleshooting
-
-### "App is damaged and can't be opened"
-This happens due to macOS security features:
-```bash
-# Your friend can run this in Terminal:
-xattr -cr /Applications/excercise-timer.app
+```sh
+cargo test --locked --all-targets
+scripts/build-macos.sh --universal
+open 'dist/macos/universal/Exercise Timer.app'
+lipo -archs 'dist/macos/universal/Exercise Timer.app/Contents/MacOS/exercise-timer'
+codesign --verify --strict --verbose=2 'dist/macos/universal/Exercise Timer.app'
+cd dist/macos/universal
+shasum -a 256 -c Exercise-Timer-*-unnotarized.sha256
 ```
 
-### "Developer cannot be verified"
-- Right-click the app → Open
-- Click "Open" in the security dialog
-- Or go to System Preferences → Security & Privacy → Click "Open Anyway"
+Smoke-test custom sets, the bodyweight preset, warm-up/rest transitions, skip, stop, completion, mute, and minimized-window audio. Check long exercise names and resizing. Test the Intel build on an Intel Mac and the oldest supported macOS before release; cross-compilation alone does not establish runtime compatibility.
 
-### App won't launch
-- Make sure it's in the Applications folder
-- Try restarting the Mac
-- Check System Preferences → Security & Privacy for blocks
+## Public release
 
-## For Developers
+Follow [CODE_SIGNING.md](CODE_SIGNING.md). Passing `--notarize` signs and notarizes the app, staples its ticket, verifies Gatekeeper acceptance, creates ZIP/DMG files from the stapled app, then signs, notarizes, and staples the DMG. Only this workflow omits `unnotarized` from archive names. Notarization submission results are saved alongside the artifacts.
 
-### Build Requirements
-- Node.js 16+
-- Rust (latest stable)
-- Tauri CLI v2
-- macOS development environment
+The CI workflow produces **unnotarized test artifacts**, without publishing a GitHub release or handling signing credentials. Keep those artifacts distinct from public downloads.
 
-### Build Commands
-```bash
-npm run build          # Build frontend
-npm run tauri build   # Create distribution bundles
-```
-
-### Build Artifacts
-- Release binary: `src-tauri/target/release/excercise-timer`
-- App bundle: `src-tauri/target/release/bundle/macos/excercise-timer.app`
-- DMG installer: `src-tauri/target/release/bundle/dmg/excercise-timer_0.1.0_aarch64.dmg` 
+For end users: open the release DMG, drag **Exercise Timer** to **Applications**, eject the disk image, then launch the installed app. Validate the downloaded notarized build on another Mac before sharing broadly. An ad-hoc signature is for local validation and does not establish Developer ID trust.
