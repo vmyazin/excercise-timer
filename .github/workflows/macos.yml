@@ -19,8 +19,13 @@ jobs:
           cargo fmt --all --check
           cargo clippy --locked --all-targets -- -D warnings
           cargo test --locked --all-targets
-      - name: Build universal local-test packages
-        run: scripts/build-macos.sh --universal
+      - name: Test native update menu and workout deferral
+        run: scripts/test-updater.sh
+      - name: Build universal local-test packages with updater
+        # Dummy public key for integration builds only; never publish these as updates.
+        env:
+          SPARKLE_PUBLIC_KEY: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+        run: scripts/build-macos.sh --universal --updater
       - uses: actions/upload-artifact@v4
         with:
           name: Exercise-Timer-universal-unnotarized

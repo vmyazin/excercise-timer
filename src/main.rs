@@ -1,6 +1,7 @@
 mod audio;
 mod runtime;
 mod ui;
+mod updates;
 
 fn main() -> eframe::Result {
     let icon = eframe::icon_data::from_png_bytes(include_bytes!("../assets/icon.png"))

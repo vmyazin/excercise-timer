@@ -31,6 +31,8 @@ Smoke-test custom sets, the bodyweight preset, warm-up/rest transitions, skip, s
 
 Follow [CODE_SIGNING.md](CODE_SIGNING.md). Passing `--notarize` signs and notarizes the app, staples its ticket, verifies Gatekeeper acceptance, creates ZIP/DMG files from the stapled app, then signs, notarizes, and staples the DMG. Only this workflow omits `unnotarized` from archive names. Notarization submission results are saved alongside the artifacts.
 
+For in-app updates, also pass `--updater` with `SPARKLE_PUBLIC_KEY` set, and follow [UPDATES.md](UPDATES.md) to generate and attach the signed appcast to every stable release. Releases without that flag have only a development menu action linking to the release downloads.
+
 The CI workflow produces **unnotarized test artifacts**, without publishing a GitHub release or handling signing credentials. Keep those artifacts distinct from public downloads.
 
 For end users: open the release DMG, drag **Exercise Timer** to **Applications**, eject the disk image, then launch the installed app. Validate the downloaded notarized build on another Mac before sharing broadly. An ad-hoc signature is for local validation and does not establish Developer ID trust.

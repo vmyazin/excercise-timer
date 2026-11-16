@@ -57,6 +57,8 @@ xcrun notarytool log SUBMISSION_ID --keychain-profile exercise-timer-notary
 
 Never modify bundle contents after signing. Rebuild and notarize each new release. The script replaces matching versioned outputs only after successful verification; older artifacts may remain in the output directory, so select the intended version when uploading.
 
+Updater-enabled releases additionally require Sparkle's archive signing key and the `--updater` build flag. See [UPDATES.md](UPDATES.md). The packaging script signs Sparkle's nested helpers and framework before signing the app; the Developer ID certificate and Sparkle key serve separate purposes.
+
 ## Final verification
 
 ```sh

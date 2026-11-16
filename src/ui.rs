@@ -85,6 +85,7 @@ pub struct App {
 
 impl App {
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
+        crate::updates::initialize();
         install_system_fonts(&cc.egui_ctx);
         cc.egui_ctx.set_style_of(Theme::Light, style(false));
         cc.egui_ctx.set_style_of(Theme::Dark, style(true));
@@ -99,6 +100,7 @@ impl App {
     fn start(&mut self) {
         self.error = self.config.validate().err().map(str::to_owned);
         if self.error.is_none() {
+            crate::updates::set_workout_active(true);
             self.runtime.send(Command::Start(self.config.clone()));
         }
     }
@@ -207,6 +209,7 @@ impl eframe::App for App {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         let snapshot = self.runtime.snapshot();
         let timer = &snapshot.timer;
+        let update_pending = crate::updates::set_workout_active(timer.running());
         let editing = ctx.wants_keyboard_input();
         if ctx.input_mut(|input| input.consume_key(egui::Modifiers::COMMAND, egui::Key::Q)) {
             ctx.send_viewport_cmd(egui::ViewportCommand::Close);
@@ -273,6 +276,9 @@ impl eframe::App for App {
                         caption(ui, timer);
                         ui.add_space(20.0);
                         self.controls(ui, timer);
+                    }
+                    if update_pending {
+                        ui.small("Update ready. The app will restart when your workout ends.");
                     }
                     if let Some(error) = self.error.as_ref().or(snapshot.error.as_ref()) {
                         ui.add_space(4.0);

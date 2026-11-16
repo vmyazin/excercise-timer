@@ -1,6 +1,6 @@
 # Exercise Timer
 
-A standalone Rust interval timer for macOS 12 or newer. The interface uses egui/eframe with GPU rendering; audio is synthesized locally with Rodio. There is no webview, JavaScript, Node.js, or network dependency at runtime.
+A standalone Rust interval timer for macOS 12 or newer. The interface uses egui/eframe with GPU rendering; audio is synthesized locally with Rodio. Workouts work offline. Updater-enabled releases use Sparkle to check for and install new versions.
 
 - Custom workouts: 1–20 sets, 5–300 seconds per set.
 - Optional warm-up (5–30 seconds) and rest between sets (5–60 seconds).
@@ -8,6 +8,7 @@ A standalone Rust interval timer for macOS 12 or newer. The interface uses egui/
 - Audible 3–2–1 countdown, interval chime, completion melody, and a mute control.
 - Skip, stop, and start a new workout; Escape stops and Command-Q quits.
 - Timer and audio continue while minimized. Active workouts prevent idle system sleep. Avoid explicit system sleep during a workout; closing the app discards the session.
+- Native **Check for Updates…** menu, optional daily checks, and signed updates in updater-enabled releases. See [UPDATES.md](UPDATES.md) for setup and publishing.
 
 ## Develop
 
@@ -42,8 +43,9 @@ Artifacts are written to `dist/macos/<architecture>/`. Local builds are ad-hoc s
 | `src/runtime.rs` | Background clock, command handling, and idle-sleep assertion |
 | `src/ui.rs` | Rust desktop interface and input |
 | `src/audio.rs` | Synthesized countdown and completion cues |
+| `src/updates.rs`, `src/macos_updates.m` | Native update menu, Sparkle lifecycle, workout-aware relaunch |
 | `assets/` | Original application icons |
 | `scripts/build-macos.sh` | Universal builds, bundle metadata, signing, notarization, ZIP, DMG, checksums |
 | `.github/workflows/macos.yml` | Formatting, linting, tests, universal package artifacts |
 
-This replaces the previous Tauri/TypeScript implementation. The bundle identifier `com.vm.excercise-timer` is retained for continuity; the displayed app name is corrected to **Exercise Timer**. No App Store submission or automatic updater is configured.
+This replaces the previous Tauri/TypeScript implementation. The bundle identifier `com.vm.excercise-timer` is retained for continuity; the displayed app name is corrected to **Exercise Timer**. No App Store submission is configured.

@@ -8,10 +8,11 @@ export PATH="${HOME}/.cargo/bin:${PATH}"
 export MACOSX_DEPLOYMENT_TARGET=12.0
 ARCH=universal
 NOTARIZE=false
+UPDATER=false
 
 usage() {
   cat <<'USAGE'
-Usage: scripts/build-macos.sh [--universal | --target TARGET] [--notarize]
+Usage: scripts/build-macos.sh [--universal | --target TARGET] [--notarize] [--updater]
 
 Default: universal (Apple Silicon + Intel), ad-hoc signed for local testing.
 Targets: aarch64-apple-darwin or x86_64-apple-darwin.
@@ -19,6 +20,8 @@ Targets: aarch64-apple-darwin or x86_64-apple-darwin.
 SIGNING_IDENTITY   Developer ID Application identity; omit for a local test build.
 NOTARY_PROFILE    notarytool Keychain profile; required with --notarize.
 NOTARY_KEYCHAIN   Optional path to the Keychain containing that profile.
+SPARKLE_PUBLIC_KEY Optional override of assets/update-public-key.txt for --updater.
+UPDATE_FEED_URL   Optional HTTPS appcast URL; defaults to this repo's latest release.
 USAGE
 }
 
@@ -30,10 +33,36 @@ while [[ $# -gt 0 ]]; do
       ARCH="$2"; shift 2
       case "$ARCH" in aarch64-apple-darwin|x86_64-apple-darwin) ;; *) usage; exit 2 ;; esac ;;
     --notarize) NOTARIZE=true; shift ;;
+    --updater) UPDATER=true; shift ;;
     --help|-h) usage; exit 0 ;;
     *) usage; exit 2 ;;
   esac
 done
+
+BUILD_FEATURES=()
+export UPDATE_FEED_URL="${UPDATE_FEED_URL:-https://github.com/vmyazin/excercise-timer/releases/latest/download/appcast.xml}"
+if $UPDATER; then
+  if [[ -z "${SPARKLE_PUBLIC_KEY:-}" && -f assets/update-public-key.txt ]]; then
+    SPARKLE_PUBLIC_KEY="$(cat assets/update-public-key.txt)"
+  fi
+  export SPARKLE_PUBLIC_KEY="${SPARKLE_PUBLIC_KEY:?Set SPARKLE_PUBLIC_KEY; see UPDATES.md}"
+  python3 - <<'PY'
+import base64, os
+from urllib.parse import urlparse
+url = urlparse(os.environ['UPDATE_FEED_URL'])
+if url.scheme != 'https' or not url.hostname or url.username or url.password:
+    raise SystemExit('UPDATE_FEED_URL must be an HTTPS URL without credentials.')
+try:
+    key = base64.b64decode(os.environ['SPARKLE_PUBLIC_KEY'], validate=True)
+except ValueError:
+    raise SystemExit('SPARKLE_PUBLIC_KEY must be base64 encoded.')
+if len(key) != 32:
+    raise SystemExit('SPARKLE_PUBLIC_KEY must contain a 32-byte Ed25519 public key.')
+PY
+  SPARKLE_DIR="$(scripts/prepare-sparkle.sh)"
+  export SPARKLE_DIR
+  BUILD_FEATURES=(--features updater)
+fi
 
 [[ "$(uname -s)" == Darwin ]] || { echo 'Build on macOS with Xcode Command Line Tools.' >&2; exit 1; }
 for tool in cargo rustup python3 xcrun codesign hdiutil ditto; do
@@ -62,20 +91,20 @@ mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 
 if [[ "$ARCH" == universal ]]; then
   rustup target add aarch64-apple-darwin x86_64-apple-darwin
-  cargo build --locked --release --target aarch64-apple-darwin
-  cargo build --locked --release --target x86_64-apple-darwin
+  cargo build --locked --release --target aarch64-apple-darwin ${BUILD_FEATURES[@]+"${BUILD_FEATURES[@]}"}
+  cargo build --locked --release --target x86_64-apple-darwin ${BUILD_FEATURES[@]+"${BUILD_FEATURES[@]}"}
   lipo -create target/aarch64-apple-darwin/release/exercise-timer \
     target/x86_64-apple-darwin/release/exercise-timer -output "$APP/Contents/MacOS/exercise-timer"
 else
   rustup target add "$ARCH"
-  cargo build --locked --release --target "$ARCH"
+  cargo build --locked --release --target "$ARCH" ${BUILD_FEATURES[@]+"${BUILD_FEATURES[@]}"}
   cp "target/$ARCH/release/exercise-timer" "$APP/Contents/MacOS/exercise-timer"
 fi
 cp assets/icon.icns "$APP/Contents/Resources/icon.icns"
-python3 - "$APP/Contents/Info.plist" "$VERSION" <<'PY'
-import plistlib, sys
+python3 - "$APP/Contents/Info.plist" "$VERSION" "$UPDATER" <<'PY'
+import os, plistlib, sys
 with open(sys.argv[1], 'wb') as stream:
-    plistlib.dump({
+    metadata = {
         'CFBundleName': 'Exercise Timer',
         'CFBundleDisplayName': 'Exercise Timer',
         'CFBundleExecutable': 'exercise-timer',
@@ -90,15 +119,39 @@ with open(sys.argv[1], 'wb') as stream:
         'NSHighResolutionCapable': True,
         'NSPrincipalClass': 'NSApplication',
         'NSHumanReadableCopyright': 'Simon at Smoxu',
-    }, stream)
+    }
+    if sys.argv[3] == 'true':
+        metadata.update({
+            'SUFeedURL': os.environ['UPDATE_FEED_URL'],
+            'SUPublicEDKey': os.environ['SPARKLE_PUBLIC_KEY'],
+            'SUEnableAutomaticChecks': True,
+            'SUScheduledCheckInterval': 86400,
+            'SUAutomaticallyUpdate': False,
+            'SUAllowsAutomaticUpdates': False,
+            'SUEnableSystemProfiling': False,
+            'SUVerifyUpdateBeforeExtraction': True,
+        })
+    plistlib.dump(metadata, stream)
 PY
 plutil -lint "$APP/Contents/Info.plist"
+if $UPDATER; then
+  FRAMEWORK="$APP/Contents/Frameworks/Sparkle.framework"
+  mkdir -p "$APP/Contents/Frameworks"
+  ditto "$SPARKLE_DIR/Sparkle.framework" "$FRAMEWORK"
+  # This app is not sandboxed; Sparkle's XPC services are unnecessary.
+  rm -rf "$FRAMEWORK/Versions/B/XPCServices" "$FRAMEWORK/XPCServices"
+  SIGN_ARGS=(--force --sign "${SIGNING_IDENTITY:--}")
+  if [[ -n "${SIGNING_IDENTITY:-}" ]]; then SIGN_ARGS+=(--options runtime --timestamp); fi
+  codesign "${SIGN_ARGS[@]}" "$FRAMEWORK/Versions/B/Autoupdate"
+  codesign "${SIGN_ARGS[@]}" "$FRAMEWORK/Versions/B/Updater.app"
+  codesign "${SIGN_ARGS[@]}" "$FRAMEWORK"
+fi
 if [[ -n "${SIGNING_IDENTITY:-}" ]]; then
   codesign --force --options runtime --timestamp --sign "$SIGNING_IDENTITY" "$APP"
 else
   codesign --force --sign - "$APP"
 fi
-codesign --verify --strict --verbose=2 "$APP"
+codesign --verify --deep --strict --verbose=2 "$APP"
 
 notarize() {
   local artifact="$1"

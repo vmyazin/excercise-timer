@@ -1,10 +1,17 @@
 [package]
 name = "exercise-timer"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 rust-version = "1.92"
 description = "An offline interval workout timer for macOS"
 authors = ["Simon at Smoxu"]
+
+[features]
+# Packaging supplies the verified Sparkle SDK and embeds the framework.
+updater = []
+
+[build-dependencies]
+cc = "1"
 
 [dependencies]
 eframe = { version = "0.33", default-features = false, features = ["accesskit", "default_fonts", "wgpu"] }
