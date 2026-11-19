@@ -92,7 +92,7 @@ impl Runtime {
                     }
                     Err(RecvTimeoutError::Timeout) => {}
                 }
-                awake.set_active(state.timer.running());
+                awake.set_active(state.timer.running(), "-i");
                 if !muted && let (Some(audio), Some(cue)) = (&mut audio, cue) {
                     audio.play(cue);
                 }
@@ -138,13 +138,13 @@ impl Drop for Runtime {
 }
 
 #[derive(Default)]
-struct KeepAwake {
+pub struct KeepAwake {
     child: Option<Child>,
     active: bool,
 }
 
 impl KeepAwake {
-    fn set_active(&mut self, active: bool) {
+    pub fn set_active(&mut self, active: bool, assertion: &str) {
         if self.active == active {
             return;
         }
@@ -154,7 +154,7 @@ impl KeepAwake {
             #[cfg(target_os = "macos")]
             {
                 self.child = ProcessCommand::new("/usr/bin/caffeinate")
-                    .args(["-i", "-w", &std::process::id().to_string()])
+                    .args([assertion, "-w", &std::process::id().to_string()])
                     .spawn()
                     .ok();
             }

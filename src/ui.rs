@@ -1,4 +1,6 @@
-use crate::runtime::{Command, Runtime};
+mod room;
+
+use crate::runtime::{Command, KeepAwake, Runtime};
 use eframe::egui::{
     self, Align, Align2, Color32, CornerRadius, FontFamily, FontId, Layout, Margin, Pos2, RichText,
     Sense, Stroke, Theme, pos2, vec2,
@@ -79,6 +81,7 @@ impl Palette {
 pub struct App {
     config: Config,
     runtime: Runtime,
+    display_awake: KeepAwake,
     muted: bool,
     error: Option<String>,
 }
@@ -92,6 +95,7 @@ impl App {
         Self {
             config: Config::default(),
             runtime: Runtime::new(cc.egui_ctx.clone()),
+            display_awake: KeepAwake::default(),
             muted: false,
             error: None,
         }
@@ -210,26 +214,44 @@ impl eframe::App for App {
         let snapshot = self.runtime.snapshot();
         let timer = &snapshot.timer;
         let update_pending = crate::updates::set_workout_active(timer.running());
+        let fullscreen = ctx.input(|input| input.viewport().fullscreen == Some(true));
+        self.display_awake
+            .set_active(fullscreen && timer.running(), "-d");
         let editing = ctx.wants_keyboard_input();
         if ctx.input_mut(|input| input.consume_key(egui::Modifiers::COMMAND, egui::Key::Q)) {
             ctx.send_viewport_cmd(egui::ViewportCommand::Close);
         }
-        if ctx.input_mut(|input| input.consume_key(egui::Modifiers::NONE, egui::Key::Escape))
-            && timer.running()
+        if (fullscreen || !editing || timer.phase != Phase::Ready) && plain_press(ctx, egui::Key::F)
         {
-            self.runtime.send(Command::Stop);
+            ctx.send_viewport_cmd(egui::ViewportCommand::Fullscreen(!fullscreen));
+        }
+        if plain_press(ctx, egui::Key::Escape) {
+            if fullscreen {
+                ctx.send_viewport_cmd(egui::ViewportCommand::Fullscreen(false));
+            } else if timer.running() {
+                self.runtime.send(Command::Stop);
+            }
         }
         if !editing
             && ctx.input_mut(|input| input.consume_key(egui::Modifiers::NONE, egui::Key::Enter))
         {
             match timer.phase {
                 Phase::Ready => self.start(),
-                Phase::Complete => self.runtime.send(Command::Stop),
+                Phase::Complete => {
+                    self.runtime.send(Command::Stop);
+                    if fullscreen {
+                        ctx.send_viewport_cmd(egui::ViewportCommand::Fullscreen(false));
+                    }
+                }
                 _ => {}
             }
         }
 
         let p = Palette::of(ctx.style().visuals.dark_mode);
+        if fullscreen {
+            room::show(self, ctx, timer);
+            return;
+        }
         egui::TopBottomPanel::bottom("footer")
             .show_separator_line(true)
             .frame(
@@ -239,6 +261,9 @@ impl eframe::App for App {
             )
             .show(ctx, |ui| {
                 ui.horizontal(|ui| {
+                    if ui.button("Across the room · F").clicked() {
+                        ctx.send_viewport_cmd(egui::ViewportCommand::Fullscreen(true));
+                    }
                     ui.small("Made by Simon at Smoxu");
                     ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
                         let mut sound = !self.muted;
@@ -295,6 +320,30 @@ impl eframe::App for App {
                 });
             });
     }
+}
+
+// A held Escape must not leave full screen and then stop the workout on key repeat.
+fn plain_press(ctx: &egui::Context, key: egui::Key) -> bool {
+    ctx.input_mut(|input| {
+        let mut pressed = false;
+        input.events.retain(|event| {
+            if let egui::Event::Key {
+                key: event_key,
+                modifiers,
+                pressed: true,
+                repeat,
+                ..
+            } = event
+                && *event_key == key
+                && modifiers.is_none()
+            {
+                pressed |= !repeat;
+                return false;
+            }
+            true
+        });
+        pressed
+    })
 }
 
 /// Space under the transparent title bar, draggable like the native one.

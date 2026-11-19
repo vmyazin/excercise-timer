@@ -6,9 +6,17 @@ A standalone Rust interval timer for macOS 12 or newer. The interface uses egui/
 - Optional warm-up (5–30 seconds) and rest between sets (5–60 seconds).
 - Eight-exercise bodyweight preset with exercise names and a preview.
 - Audible 3–2–1 countdown, interval chime, completion melody, and a mute control.
-- Skip, stop, and start a new workout; Escape stops and Command-Q quits.
+- Full-screen across-the-room mode with a large countdown, current and upcoming movements, and set numbers.
 - Timer and audio continue while minimized. Active workouts prevent idle system sleep. Avoid explicit system sleep during a workout; closing the app discards the session.
 - Native **Check for Updates…** menu, optional daily checks, and signed updates in updater-enabled releases. See [UPDATES.md](UPDATES.md) for setup and publishing.
+
+## Across-the-room controls
+
+Press **F** or click **Across the room · F** before or during a workout. From the full-screen preview, press **Enter** to start. The display stays awake during an active full-screen workout.
+
+The phase label and color change together for warm-up, work, and rest. **Up next** previews the next bodyweight movement or custom set, including during a rest. The final set previews completion, and a green checkmark marks the finish.
+
+Press **F** or **Esc**, or click **Regular view**, to leave full screen while the countdown continues. In the regular view, **Esc** stops an active workout. **Skip** advances to the next interval in either view. After completion, **Enter** returns to setup. **Command-Q** quits the app.
 
 ## Develop
 
@@ -41,7 +49,7 @@ Artifacts are written to `dist/macos/<architecture>/`. Local builds are ad-hoc s
 | --- | --- |
 | `src/timer.rs` | Validated configuration and deterministic workout state machine with unit tests |
 | `src/runtime.rs` | Background clock, command handling, and idle-sleep assertion |
-| `src/ui.rs` | Rust desktop interface and input |
+| `src/ui.rs`, `src/ui/room.rs` | Regular and across-the-room views and keyboard controls |
 | `src/audio.rs` | Synthesized countdown and completion cues |
 | `src/updates.rs`, `src/macos_updates.m` | Native update menu, Sparkle lifecycle, workout-aware relaunch |
 | `assets/` | Original application icons |
