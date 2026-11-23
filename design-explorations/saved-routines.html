@@ -1,0 +1,561 @@
+<!-- Saved routines & quick repeat | Exercise Timer for macOS · src/ui.rs, src/timer.rs, src/main.rs | November 18, 2026 -->
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Saved routines &amp; quick repeat · Exercise Timer</title><style>
+
+    :root {
+      --brand-50: #e1edfb;
+      --brand-100: #c3ddfa;
+      --brand-300: #6583a3;
+      --brand-500: #225892;
+      --brand-700: #173a61;
+      --accent-50: #e6f0ff;
+      --accent-500: #007aff;
+      --accent-700: #155bb0;
+      --ink: #171d24;
+      --ink-soft: #46515d;
+      --ink-mute: #5c6876;
+      --line: #cfd7df;
+      --line-soft: #e4e9ee;
+      --paper: #ffffff;
+      --bg: #f6f8fa;
+      --shadow-sm: 0 1px 2px rgba(20, 16, 70, 0.04), 0 1px 1px rgba(20, 16, 70, 0.02);
+      --shadow-md: 0 4px 24px -8px rgba(20, 16, 70, 0.08), 0 2px 4px rgba(20, 16, 70, 0.03);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.5;
+    }
+
+    .page {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 72px 48px 160px;
+    }
+
+
+    .doc-header {
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 40px;
+      margin-bottom: 80px;
+    }
+    .doc-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--brand-500);
+      background: var(--brand-50);
+      padding: 6px 12px;
+      border-radius: 999px;
+      margin-bottom: 20px;
+    }
+    .doc-eyebrow::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--brand-500);
+    }
+    .doc-title {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 56px;
+      line-height: 1.05;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      margin: 0 0 16px;
+      color: var(--ink);
+    }
+    .doc-subtitle {
+      font-size: 19px;
+      color: var(--ink-soft);
+      max-width: 720px;
+      margin: 0 0 32px;
+      line-height: 1.45;
+    }
+    .doc-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      font-size: 13px;
+      color: var(--ink-mute);
+    }
+    .doc-meta > div { display: flex; gap: 6px; }
+    .doc-meta b {
+      color: var(--ink-soft);
+      font-weight: 600;
+    }
+
+
+    .variant {
+      margin-bottom: 96px;
+    }
+    .variant:last-child { margin-bottom: 0; }
+
+    .variant-head {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      gap: 20px;
+      align-items: start;
+      margin-bottom: 28px;
+    }
+    .variant-letter {
+      width: 48px;
+      height: 48px;
+      border-radius: 999px;
+      background: var(--ink);
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: -0.02em;
+    }
+    .variant-meta h2 {
+      margin: 4px 0 6px;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+    }
+    .variant-tradeoff {
+      font-size: 15px;
+      color: var(--ink-soft);
+      margin: 0;
+      max-width: 760px;
+    }
+    .variant-tradeoff b {
+      color: var(--brand-500);
+      font-weight: 600;
+    }
+
+
+    .preview-frame {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      margin-left: 84px;
+      position: relative;
+    }
+    .preview-frame::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 16px;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #f0e9e0;
+      box-shadow: 18px 0 0 #f0e9e0, 36px 0 0 #f0e9e0;
+      z-index: 2;
+    }
+    .preview-frame-bar {
+      background: #faf9f5;
+      border-bottom: 1px solid var(--line-soft);
+      padding: 14px 16px 14px 76px;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      font-weight: 600;
+    }
+    .preview {
+      padding: 0;
+      min-height: 200px;
+    }
+
+
+    .variant-analysis {
+      margin: 24px 0 0 84px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 24px;
+    }
+    .analysis-block {
+      padding: 18px 20px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--paper);
+    }
+    .analysis-block h4 {
+      margin: 0 0 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brand-500);
+    }
+    .analysis-block.is-risk h4 { color: #b8341f; }
+    .analysis-block.is-pick h4 { color: var(--accent-700); }
+    .analysis-block p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--ink-soft);
+    }
+
+
+    .decision {
+      margin-top: 120px;
+      padding: 40px 48px;
+      background: var(--ink);
+      color: white;
+      border-radius: 20px;
+    }
+    .decision h3 {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 28px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      margin: 0 0 8px;
+    }
+    .decision-sub {
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 14px;
+      margin: 0 0 28px;
+    }
+    .decision-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .decision-cell b {
+      display: block;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brand-100);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .decision-cell span {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.85);
+      line-height: 1.45;
+    }
+
+
+    @media (max-width: 900px) {
+      .page { padding: 40px 20px 80px; }
+      .doc-title { font-size: 36px; }
+      .variant-head { grid-template-columns: 48px 1fr; gap: 12px; }
+      .preview-frame { margin-left: 0; }
+      .variant-analysis { margin-left: 0; grid-template-columns: 1fr; }
+    }
+
+
+  :root{--apple:#007aff;--blue-ink:#075bb9;--green:#28b44b;--orange:#ec8812;--purple:#af52de;--muted:#58616b;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select{font:inherit}button{cursor:pointer;color:inherit}button:focus-visible,input:focus-visible,summary:focus-visible,select:focus-visible{outline:3px solid #3589db;outline-offset:2px}button:disabled{opacity:.45;cursor:default}
+.page{max-width:1520px;padding:22px clamp(16px,3vw,52px) 56px}
+.mast,.brand,.tools,.scenario,.stage-tools,.hrow,.actionbar,.segment,.line,.toolbar,.footer,.library-item,.back,.slot,.side-by,.sheet-title,.brandline{display:flex;align-items:center}
+.mast{justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:14px;color:var(--ink-soft);font-size:12px}.brand{gap:8px;font-weight:650}.brand img{width:26px;height:26px}.mast time,.kicker,.variant-letter,.scale-info{font:11px var(--mono)}.doc-header{margin:0;padding:24px 0 22px;border:0}.doc-title{font-size:clamp(32px,4.2vw,60px);font-weight:600;letter-spacing:-.064em;margin:0 0 8px}.doc-subtitle{font-size:16px;margin:0;max-width:none}
+.tools{justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 0;border-block:1px solid var(--line)}.scenario,.stage-tools{gap:8px;font-size:12px}.scenario>span{font-weight:600;margin-right:2px}.tabs{display:flex;padding:3px;background:#e4e9ee;border-radius:8px}.tabs button{background:transparent;border:0;padding:5px 11px;border-radius:5px;color:#4d5965}.tabs button[aria-pressed=true]{background:#fff;box-shadow:0 1px 3px #142a4525;color:#17283d;font-weight:600}.stage-tools select{padding:4px;border:1px solid #cbd3dc;background:white;border-radius:5px}
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(15px,2vw,36px);margin-top:22px}.variant{min-width:0;margin:0}.variant-head{display:block;margin:0 0 12px}.brandline{gap:8px}.variant-letter{width:25px;height:25px;border-radius:7px;font-size:13px;font-weight:700;background:#1c416b}.variant h2{font-size:clamp(19px,1.65vw,26px);margin:0;letter-spacing:-.045em}.variant-tradeoff{font-size:13px;line-height:1.45;margin-top:5px;min-height:38px}
+.stage{container-type:inline-size}.bounds{margin:auto;position:relative}.mac{position:absolute;top:0;left:0;transform-origin:top left;overflow:hidden;display:flex;flex-direction:column;line-height:1.3;background:#f0f0f0;border:1px solid #b9bfc4;border-radius:13px;box-shadow:0 8px 15px -8px #10253c44,0 1px 2px #12243a1c;font-size:13px;color:#242424}
+.titlebar{height:30px;flex:none;display:flex;align-items:center;padding:0 12px;gap:6px}.light{width:11px;height:11px;border-radius:50%;background:#ff6058;border:1px solid #0001}.light:nth-child(2){background:#ffbd2e}.light:nth-child(3){background:#29c941}.titlebar small{flex:1;text-align:right;color:#656565;font-size:11px}.content{overflow:auto;flex:1;min-height:0;padding:7px 19px 14px;scrollbar-width:thin}.footer{justify-content:space-between;flex:none;border-top:1px solid #d5d5d5;padding:8px 14px;font-size:10px;color:#626262}.footer span{display:flex;align-items:center;gap:4px}.footer i{width:19px;height:11px;border-radius:8px;background:var(--green);position:relative}.footer i:after{content:"";width:8px;height:8px;position:absolute;top:1.5px;right:2px;border-radius:50%;background:white}
+.ico{width:16px;height:16px;display:inline-block;flex:none;vertical-align:-3px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.tiny{width:13px;height:13px}.mac button{border:1px solid transparent;font-weight:550}.mac button:hover:not(:disabled){filter:brightness(.95)}.primary,.plain,.link,.iconbtn,.fav,.biglink,.list-start,.pick,.repeat{display:inline-flex;align-items:center;justify-content:center;gap:6px}.primary,.plain{border-radius:7px;padding:7px 11px}.mac .primary{background:var(--apple);color:white}.mac .plain{background:white;border-color:#cfcfcf;box-shadow:0 1px 1px #0000000a}.link,.iconbtn,.biglink{padding:4px 5px;background:transparent;color:var(--blue-ink);border:0}.iconbtn{width:28px;height:28px;border-radius:6px}.iconbtn[aria-pressed=true]{background:#e5f0fe}.iconbtn[aria-pressed=true] svg{fill:#b4d8ff}.full{width:100%}.section-title{font-size:12px;font-weight:650;color:#565b62;margin:14px 0 6px}.hrow,.toolbar,.sheet-title{justify-content:space-between;gap:8px}.hrow .section-title{margin:0}.hrow{margin:12px 0 5px}
+.group,.library-group{background:#fcfcfc;border:1px solid #dedede;border-radius:8px;overflow:hidden}.line{justify-content:space-between;gap:8px;min-height:39px;margin:0 10px}.line+.line{border-top:1px solid #e2e2e2}.side-by{gap:8px}.segment{padding:2px;border-radius:6px;background:#e5e5e5}.segment button{background:transparent;padding:3px 8px;border-radius:4px;font-size:12px}.segment button[aria-pressed=true]{background:white;box-shadow:0 1px 3px #0002}.field{display:flex;align-items:center;gap:3px}.field input{width:53px;text-align:right;border-radius:4px;border:1px solid #ccc;background:white;padding:2px;color:#222;font-size:12px}.field small{width:16px;color:var(--muted)}.field:has(:disabled){opacity:.42}.switch{width:30px;height:17px;border-radius:12px;background:#aaa;padding:1px;display:flex;align-items:center}.switch[aria-checked=true]{background:var(--green);justify-content:flex-end}.switch i{display:block;width:13px;height:13px;border-radius:100%;background:white;box-shadow:0 1px 2px #0003}.exercises{font-size:12px;margin:5px;color:#575757}.exercises summary{cursor:pointer}.exercises ol{padding-left:20px}.actionbar{gap:7px;margin-top:10px}.actionbar .primary{flex:1}.muted,.sub{color:var(--muted)}.sub{font-size:11px;margin:3px 0 0}.main-name,.library-item strong,.pick strong,.recent-head,.fav span{overflow-wrap:anywhere}
+.dial{--d:156px;--phase:var(--apple);--progress:100%;width:var(--d);height:var(--d);flex:none;position:relative;display:grid;place-items:center;border-radius:50%;background:conic-gradient(var(--phase) var(--progress),#d9d9d9 0);isolation:isolate}.dial:before{content:"";position:absolute;inset:calc(var(--d)*.04);background:var(--surface,#f0f0f0);border-radius:50%;z-index:-1}.readout{display:grid;text-align:center;align-content:center;gap:1px}.readout small{font-size:12px;color:#5b6269}.readout b{font:500 calc(var(--d)*.225)/1.12 var(--mono);letter-spacing:-.08em}.readout span{font-size:11px;color:#626970}.main-name{margin:4px 0;font-size:22px;line-height:1.15;letter-spacing:-.045em}.kicker{text-transform:uppercase;letter-spacing:.1em;color:#576773;font-size:10px}.minihero{display:flex;align-items:center;gap:17px;padding:4px 0 5px}.minihero .dial{--d:115px}.minihero .sub{font-size:12px}.minihero .readout b{font-size:26px}
+.shelf{border-top:1px solid #d2d2d2;margin-top:15px}.quick-row{display:flex;align-items:center;gap:8px;padding:8px 10px;width:100%;text-align:left;border-radius:6px;background:#fafafa}.quick-row .iconbox{width:26px;height:26px;background:#e5effa;border-radius:6px;display:grid;place-items:center;color:var(--blue-ink)}.quick-row .tail{margin-left:auto;color:var(--blue-ink)}.quick-row strong{display:block;font-size:12px}.chips{display:flex;gap:6px;flex-wrap:wrap;margin:7px 0}.mac .fav{background:#fafafa;border-color:#d3d8dd;border-radius:6px;font-size:12px;padding:5px 8px;color:#214c79;max-width:100%}
+.library-heading{font-size:29px;letter-spacing:-.055em;margin:0}.toolbar{margin:3px 0 13px}.recent{padding:16px;border-radius:12px;background:#e0ebf8;border:1px solid #c2d6ed}.recent .kicker{color:#275784}.recent-head{font-size:22px;letter-spacing:-.045em;margin:7px 0}.recent .side-by{justify-content:space-between}.recent .primary{margin-top:12px}.wave{display:flex;align-items:flex-end;gap:3px;height:30px}.wave i{width:5px;border-radius:3px;background:#3882c8;height:27px}.wave i:first-child{height:10px;background:#d78823}.library-item{gap:8px;padding:9px 8px}.library-item+.library-item{border-top:1px solid #dedede}.list-start{flex:1;min-width:0;justify-content:flex-start;text-align:left;background:transparent;padding:0}.list-start>span:last-child{min-width:0}.list-start strong,.pick strong{font-size:13px;display:block}.glyph{width:32px;height:34px;border-radius:7px;display:grid;place-items:center;background:#e5eef8;color:#2367ad;flex:none}.glyph.body{background:#eae6f8;color:#69509c}.library-item .play{color:var(--blue-ink)}.empty{margin:8px 0 0;border:1px dashed #c5cbd2;border-radius:8px;color:#57616c;padding:12px;font-size:12px}
+.focus-head{text-align:center;margin:6px 0 10px}.focus-head .main-name{font-size:25px}.vc .focus-dial{--d:196px;margin:0 auto}.vc .dial-action{margin:15px auto 5px;display:flex;min-width:175px}.vc .adjust{display:flex;margin:0 auto}.picker{display:grid;gap:5px;margin-top:5px}.pick{width:100%;text-align:left;padding:7px 8px;justify-content:flex-start;background:#fafafa;border-radius:7px}.mac .pick[aria-pressed=true]{background:#e2edfa;border-color:#b5cee9}.pick .mark{margin-left:auto;color:var(--blue-ink)}.pick .glyph{width:26px;height:27px}.vc .pick .sub{font-size:10px}
+.sheet{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#1d293d38;padding:16px;z-index:4}.panel{width:100%;max-height:92%;overflow:auto;padding:16px;background:#f5f5f6;border-radius:12px;box-shadow:0 10px 36px #12223848;border:1px solid #bec4cc}.sheet-title{margin-bottom:13px}.sheet-title h3{font-size:18px;letter-spacing:-.035em;margin:0}.panel label.name{display:block;font-weight:600;margin:14px 0 4px}.panel input.name{width:100%;border:1px solid #b5bbc4;border-radius:6px;padding:8px;background:#fff}.panel .actionbar{justify-content:flex-end}.panel .actionbar .primary{flex:0 0 auto}.check{display:flex;align-items:center;gap:4px;margin:10px 0 20px}.panel .dial{--d:100px;--surface:#f5f5f6;margin:0 auto 10px}.saved-summary{padding:8px 10px;border-radius:6px;background:#e7ecf1;color:#405368;font-size:12px}.back{gap:2px;padding-left:0}.run{text-align:center;padding-top:30px}.run .dial{--d:240px;margin:0 auto 23px}.run h3{margin:4px 0;font-size:20px}.run .actionbar{margin-top:25px}.run .actionbar button{flex:1}.run .stop{color:#b42a24}.reopen{display:flex;justify-content:center;margin:11px 0}.reopen button{display:inline-flex;align-items:center;gap:5px;background:transparent;border:0;color:#40566d;font-size:12px;padding:4px}.analysis{border-top:1px solid var(--line);padding:11px 0 0;font-size:13px;color:var(--ink-soft);margin:0}.analysis b{color:var(--ink)}.decision{margin:25px 0 0;padding:21px 25px;border-radius:12px;background:#193951}.decision h3{font-size:21px;font-weight:600}.decision p{margin:4px 0 0;font-size:14px;max-width:950px;color:#e4eff6}.note{font-size:12px;color:var(--ink-mute);margin:13px 0 0}.toast{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);background:#27343e;color:white;padding:7px 10px;border-radius:7px;max-width:90%;font-size:12px;z-index:5;text-align:center;pointer-events:none}.sr{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media(max-width:980px){.board{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:25px}.variant-tradeoff{min-height:38px}}@media(max-width:650px){.board{grid-template-columns:1fr}.page{padding:15px 16px 38px}.variant-tradeoff{min-height:0}.variant{max-width:450px;width:100%;margin:0 auto}.tools{gap:8px}.decision{margin-top:22px}.doc-subtitle{font-size:14px}.mast time{font-size:10px}}
+</style></head><body>
+<main class="page"><div class="mast"><div class="brand"><img alt="" src="data:image/png;base64,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">Exercise Timer <span style="color:#78838f">/</span> macOS</div><time datetime="2026-11-18">18 NOV 2026</time></div>
+<header class="doc-header"><h1 class="doc-title">Saved routines &amp; quick repeat</h1><p class="doc-subtitle">Try the same workout three ways. Save a setup, pin a favorite, then reopen a window to repeat its last workout.</p></header>
+<div class="tools"><div class="scenario"><span>Try a scenario</span><div class="tabs" role="group" aria-label="Preview scenario"><button data-scenario="first" aria-pressed="false">First launch</button><button data-scenario="returning" aria-pressed="true">Returning user</button></div></div>
+<div class="stage-tools"><label for="window-size">Mac window</label><select id="window-size"><option value="default">420 × 640 pt</option><option value="min">380 × 600 pt</option></select><button id="reset" class="link">Reset examples</button></div></div>
+<div class="board"></div><section class="decision"><h3>Recommendation · A, Setup shelf</h3><p>Keep setup as the first screen. A first-time user can start from the defaults, and a returning user can repeat a workout or launch a pin from the same window. If the saved list becomes the usual starting point, B gives it more room.</p></section>
+<p class="note">Each window has its own demo history. A start captures the full setup for the next repeat. The shipped app currently keeps settings only for the session.</p></main><script>const directions = [
+  ["A","Setup shelf","Edit intervals in place. Repeat and pinned starts share the space below the editor.","Choose this if","people often change sets or work duration between sessions."],
+  ["B","Routine library","Browse named workouts at launch. Editing moves one click deeper.","Choose this if","people rotate through a growing collection and recognize routines by name."],
+  ["C","Dial picker","Give one routine the full dial. Browsing beyond the pins takes another click.","Choose this if","people alternate between their last workout and one or two favorites."]
+];
+const base = {preset:false,sets:5,duration:30,warm_up:true,warm_up_duration:10,rest:false,rest_duration:5};
+const body = {...base,preset:true,rest:true};
+const exercises = ["Push-ups (standard or knees)", "Downward dog to upward dog flow (slow breaths)", "Bodyweight squats", "Forearm plank", "Prone Y-T raises (face down, lift arms in Y then T, light squeezes)", "Glute bridge", "Toe touch to overhead reach (hamstring to extension)", "Standing hip openers (slow knee circles)"];
+const copy = value => JSON.parse(JSON.stringify(value));
+const sets = c => c.preset ? 8 : c.sets;
+const total = c => sets(c)*c.duration+(c.warm_up?c.warm_up_duration:0)+(c.rest?(sets(c)-1)*c.rest_duration:0);
+const time = n => [Math.floor(n/60),n%60].map(v=>String(v).padStart(2,"0")).join(":");
+const type = c => c.preset?"Bodyweight":"Custom";
+const count = c => sets(c)+" "+(c.preset?"exercises":sets(c)===1?"set":"sets");
+const summary = c => count(c)+" · "+c.duration+" sec work · "+time(total(c));
+const short = c => count(c)+" · "+time(total(c));
+const safe = str => String(str).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+const paths = {
+  play:'<path d="m6 3.4 10 6.6-10 6.6z" fill="currentColor" stroke="none"/>',repeat:'<path d="M4 8a6.5 6.5 0 1 1-.2 5m-.3-9v4.5H8"/>',
+  pin:'<path d="m11 3 6 6-2 1-2 4-3-1-5 5m4-6-3-3 4-2z"/>',plus:'<path d="M10 4v12M4 10h12"/>',save:'<path d="M5 3h10v14l-5-3-5 3z"/>',list:'<path d="M7 5h10M7 10h10M7 15h10M3 5h.1M3 10h.1M3 15h.1"/>',
+  body:'<circle cx="10" cy="4" r="2"/><path d="m4 7 6 2 6-2m-6 2v3m0 0-4 5m4-5 4 5"/>',interval:'<path d="M3 15V9m4 6V5m4 10V9m4 6V5"/>',check:'<path d="m4 10 4 4 8-9"/>',close:'<path d="m5 5 10 10M15 5 5 15"/>',adjust:'<path d="M2 6h6m4 0h6M2 14h10m4 0h2"/><circle cx="10" cy="6" r="2"/><circle cx="14" cy="14" r="2"/>'
+};
+const icon = (name,cls="")=>`<svg aria-hidden="true" class="ico ${cls}" viewBox="0 0 20 20">${paths[name]}</svg>`;
+const action = (key,label,cls="plain",extra="")=>`<button type="button" data-act="${key}" class="${cls}" ${extra}>${label}</button>`;
+const initial = (returning)=>({last:returning?{name:"Custom workout",config:copy(base)}:null,routines:returning?[
+  {id:"circuit",name:"Morning circuit",config:copy(body),pinned:true},
+  {id:"five",name:"Five rounds",config:copy(base),pinned:false}
+]:[]});
+let scenario="returning", small=false;
+try{if(localStorage.getItem("exercise-timer-design-scenario")==="first")scenario="first"}catch{}
+function markScenario(){
+  document.querySelectorAll("[data-scenario]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.scenario===scenario));
+}
+const slots = {};
+const timers = {};
+function getModel(id){
+  const key="exercise-timer-design-v3-"+scenario+"-"+id;
+  if(!slots[key]){
+    let disk;
+    try{disk=JSON.parse(localStorage.getItem(key))}catch{}
+    slots[key]={key,data:disk??initial(scenario==="returning")};
+    reopen(slots[key]);
+  }
+  return slots[key];
+}
+function remember(m){try{localStorage.setItem(m.key,JSON.stringify(m.data))}catch{}}
+function reopen(m){
+  Object.assign(m,{draft:copy(base),sheet:null,selection:m.data.last?"last":"draft",running:null,showExercises:false,savedName:"",draftRecord:null,notice:""});
+}
+function selected(m){
+  return (m.selection==="last"?m.data.last:m.data.routines.find(r=>r.id===m.selection)) || {name:type(m.draft)+" workout",config:m.draft};
+}
+function dial(c,cls="",phase="Total",seconds=total(c),detail=sets(c)+" sets",style=""){
+  return `<div class="dial ${cls}" style="${style}"><div class="readout"><small>${phase}</small><b>${time(seconds)}</b><span>${safe(detail)}</span></div></div>`;
+}
+function glyph(c){return `<span class="glyph ${c.preset?"body":""}">${icon(c.preset?"body":"interval")}</span>`}
+function field(c,key,label,min,max,step,unit,enabled=true){
+  return `<span class="field"><input type="number" aria-label="${label}" data-key="${key}" min="${min}" max="${max}" step="${step}" value="${c[key]}" ${enabled?"":"disabled"}>${unit?"<small>sec</small>":""}</span>`;
+}
+function toggle(c,key,label){
+  return action("toggle",'<i></i>',"switch",`role="switch" aria-label="${label}" aria-checked="${c[key]}" data-key="${key}"`);
+}
+function settings(m){
+  const c=m.draft;
+  const row=(label,control)=>`<div class="line"><span>${label}</span><div class="side-by">${control}</div></div>`;
+  return `<div class="group">${row("Workout",`<div class="segment">${["Custom","Bodyweight"].map((mode,i)=>action("mode",mode,"",`data-mode="${i}" aria-pressed="${Number(c.preset)===i}"`)).join("")}</div>`)}
+  ${row("Sets",c.preset?'<span class="muted">8 exercises</span>':field(c,"sets","Sets",1,20,1,false))}
+  ${row("Work duration",field(c,"duration","Work duration in seconds",5,300,5,true))}
+  ${row("Warm-up",toggle(c,"warm_up","Warm-up")+field(c,"warm_up_duration","Warm-up seconds",5,30,5,true,c.warm_up))}
+  ${row("Rest between sets",toggle(c,"rest","Rest between sets")+field(c,"rest_duration","Rest seconds",5,60,5,true,c.rest))}
+  </div>${c.preset?`<details class="exercises" ${m.showExercises?"open":""}><summary>Exercises</summary><ol>${exercises.map(e=>`<li>${safe(e)}</li>`).join("")}</ol></details>`:""}`;
+}
+function editActions(){
+  return `<div class="actionbar">${action("save",icon("save")+"Save routine…","plain")}${action("start",icon("play")+"Start Workout","primary")}</div>`;
+}
+function shelf(m){
+  const c=m.draft,last=m.data.last,pins=m.data.routines.filter(r=>r.pinned);
+  return `<div class="minihero">${dial(c)}<div><span class="kicker">Current setup</span><h3 class="main-name">${type(c)} workout</h3><div class="sub">${count(c)} · ${c.duration} sec work</div></div></div>${settings(m)}${editActions()}
+  <div class="shelf"><div class="hrow"><span class="section-title">Quick start</span>${action("library",icon("list","tiny")+"Saved routines","link")}</div>
+  ${last?action("repeat",`<span class="iconbox">${icon("repeat")}</span><span><strong>Repeat last workout</strong><span class="sub">${safe(last.name)} · ${time(total(last.config))}</span></span><span class="tail">${icon("play")}</span>`,"quick-row"):'<p class="empty">Start a workout once to repeat it here.</p>'}
+  ${pins.length?`<div class="chips">${pins.map(r=>action("launch",icon("pin","tiny")+"<span>"+safe(r.name)+"</span>"+icon("play","tiny"),"fav",`data-id="${r.id}" aria-label="Start pinned ${safe(r.name)}"`)).join("")}</div>`:""}</div>`;
+}
+function rows(list){
+  return `<div class="library-group">${list.map(r=>`<div class="library-item">
+    ${action("launch",glyph(r.config)+`<span><strong>${safe(r.name)}</strong><span class="sub">${type(r.config)} · ${short(r.config)}</span></span>`,"list-start",`data-id="${r.id}" aria-label="Start ${safe(r.name)}"`)}
+    ${action("pin",icon("pin"),"iconbtn",`data-id="${r.id}" title="${r.pinned?"Unpin":"Pin"} ${safe(r.name)}" aria-label="${r.pinned?"Unpin":"Pin"} ${safe(r.name)}" aria-pressed="${r.pinned}"`)}
+    ${action("launch",icon("play"),"iconbtn play",`data-id="${r.id}" aria-label="Play ${safe(r.name)}"`)}</div>`).join("")}</div>`;
+}
+function collection(m){
+  if(!m.data.routines.length) return '<p class="empty">Save your setup as a routine. Pin a favorite to keep it at the top.</p>';
+  return [true,false].map(pinned=>{
+    const list=m.data.routines.filter(r=>r.pinned===pinned);
+    return list.length?`<h4 class="section-title">${pinned?"Pinned":"Saved routines"}</h4>${rows(list)}`:"";
+  }).join("");
+}
+function libraryHome(m){
+  const last=m.data.last;
+  const bars=last?Array.from({length:Math.min(sets(last.config),20)},()=>"<i></i>").join(""):"";
+  return `<div class="toolbar"><h3 class="library-heading">My routines</h3>${action("edit",icon("plus","tiny")+"New workout","plain")}</div>
+   ${last?`<div class="recent"><div class="kicker">Last workout</div><div class="side-by"><div><h4 class="recent-head">${safe(last.name)}</h4><p class="sub">${short(last.config)} · ${last.config.duration} sec work</p></div><div aria-hidden="true" class="wave">${last.config.warm_up?"<i></i>":""}${bars}</div></div>${action("repeat",icon("repeat")+"Repeat last workout","primary full")}</div>`:
+   `<div class="recent"><div class="kicker">First workout</div><h4 class="recent-head">Set up your timer</h4><p class="sub">Choose Custom intervals or the eight-exercise Bodyweight workout.</p>${action("edit","Configure workout","primary full")}</div>`}
+   ${collection(m)}`;
+}
+function picker(m){
+  const active=selected(m),last=m.data.last,pins=m.data.routines.filter(r=>r.pinned);
+  const options=[...(last?[{...last,id:"last"}]:[]),...pins];
+  const isLast=m.selection==="last" && last;
+  return `<div class="focus-head"><span class="kicker">${isLast?"Last workout":m.selection==="draft"?"Current setup":"Pinned routine"}</span><h3 class="main-name">${safe(active.name)}</h3></div>
+    ${dial(active.config,"focus-dial")}${action("selected",icon(isLast?"repeat":"play")+(isLast?"Repeat last workout":"Start Workout"),"primary dial-action")}
+    ${action("adjust",icon("adjust","tiny")+"Adjust setup…","link adjust")}
+    <div class="shelf"><div class="hrow"><span class="section-title">Workout picker</span>${action("library","All routines","link")}</div>
+    ${options.length?`<div class="picker">${options.map(r=>action("pick",glyph(r.config)+`<span><strong>${r.id==="last"?"Last workout":safe(r.name)}</strong><span class="sub">${r.id==="last"?safe(r.name):type(r.config)} · ${time(total(r.config))}</span></span><span class="mark">${m.selection===r.id?icon("check"):""}</span>`,"pick",`aria-pressed="${m.selection===r.id}" data-id="${r.id}"`)).join("")}</div>`:'<p class="empty">Your last workout and pinned routines will appear here.</p>'}</div>`;
+}
+function overlay(m){
+  let title="",html="";
+  if(m.sheet==="save"){
+    title="Save routine";
+    html=`<form data-save><div class="saved-summary">${type(m.draft)} · ${summary(m.draft)}</div><label class="name" for="name-${m.id}">Routine name</label><input id="name-${m.id}" class="name" name="routineName" placeholder="e.g. Morning intervals" maxlength="60" required autocomplete="off" value="${safe(m.savedName)}"><label class="check"><input type="checkbox" name="pinned"> Pin for quick start</label><div class="actionbar">${action("cancel-save","Cancel","plain")}<button type="submit" class="primary">Save routine</button></div></form>`;
+  }else if(m.sheet==="edit"){
+    title="Workout setup";
+    html=dial(m.draft)+settings(m)+editActions();
+  }else if(m.sheet==="library"){
+    title="Saved routines";html=collection(m);
+  }else return "";
+  return `<div class="sheet"><div role="dialog" aria-modal="true" aria-label="${title}" class="panel"><div class="sheet-title"><h3>${title}</h3>${action(m.sheet==="save"?"cancel-save":"close",icon("close"),"iconbtn",'aria-label="Close"')}</div>${html}</div></div>`;
+}
+function launch(m,record){
+  const c=copy(record.config);
+  const phases=[];
+  if(c.warm_up)phases.push(["Warm-up",c.warm_up_duration,0]);
+  for(let i=1;i<=sets(c);i++){
+    phases.push(["Work",c.duration,i]);
+    if(c.rest && i<sets(c))phases.push(["Rest",c.rest_duration,i]);
+  }
+  m.data.last={name:record.name,config:c};
+  remember(m);
+  Object.assign(m,{sheet:null,notice:"",running:{phases,index:0,end:Date.now()+phases[0][1]*1000,config:c,name:record.name}});
+}
+function runView(m){
+  const t=m.running,step=t.phases[t.index];
+  if(!step) return `<div class="run"><div class="dial" style="--phase:#28b44b"><b>✓</b></div><h3>Workout complete</h3><p>${count(t.config)} finished</p>${action("stop","New Workout","primary full")}</div>`;
+  const [phase,duration,i]=step,remaining=Math.max(0,Math.ceil((t.end-Date.now())/1000)),c=t.config;
+  const name=n=>c.preset?exercises[n-1]:"Set "+n+" of "+sets(c);
+  const title=phase==="Work"?name(i):phase==="Rest"?"Rest & recover":"Get ready";
+  const desc=phase==="Work"?safe(t.name):(phase==="Warm-up"?"Up first · ":"Next · ")+safe(name(i+1));
+  return `<div class="run">${dial(c,"",phase,remaining,phase==="Work"?"Set "+i+" of "+sets(c):"",`--phase:${phase==="Warm-up"?"var(--orange)":phase==="Rest"?"var(--purple)":remaining<=3?"#ff3b30":"var(--apple)"};--progress:${remaining/duration*100}%`)}
+  <h3>${safe(title)}</h3><p class="sub">${desc}</p><div class="actionbar">${action("stop","Stop","plain stop")}${action("skip","Skip","plain")}</div></div>`;
+}
+function render(id){
+  const m=getModel(id);m.id=id;
+  const mac=document.querySelector("#mac-"+id);
+  const content=mac.querySelector(".content"),scroll=content.scrollTop,ps=mac.querySelector(".panel")?.scrollTop??0;
+  const active=mac.contains(document.activeElement)?document.activeElement:null;
+  const focus=active?.dataset.act,focusId=active?.dataset.id;
+  content.innerHTML=m.running?runView(m):id==="A"?shelf(m):id==="B"?libraryHome(m):picker(m);
+  content.scrollTop=scroll;
+  const layer=mac.querySelector(".layer");
+  layer.innerHTML=overlay(m);
+  content.inert=!!m.sheet;
+  if(m.sheet){
+    const p=layer.querySelector(".panel");p.scrollTop=ps;
+    if(m.sheet==="save")p.querySelector(".name[name]").focus({preventScroll:true});
+    else (p.querySelector(`[data-act="${focus}"]${focusId?'[data-id="'+focusId+'"]':''}`)||p.querySelector("button")).focus({preventScroll:true});
+  }else if(focus){
+    content.querySelector(`[data-act="${focus}"]${focusId?'[data-id="'+focusId+'"]':''}`)?.focus({preventScroll:true});
+  }
+  mac.querySelector(".feedback").innerHTML=m.notice?`<div class="toast" role="status">${safe(m.notice)}</div>`:"";
+}
+function toast(m,msg){
+  m.notice=msg;clearTimeout(timers[m.id]);
+  timers[m.id]=setTimeout(()=>{m.notice="";if(getModel(m.id)===m)document.querySelector("#mac-"+m.id+" .feedback").innerHTML=""},2000);
+}
+function sizeWindows(){
+  document.querySelectorAll(".stage").forEach(stage=>{
+    const w=small?380:420,h=small?600:640,scale=Math.min(1,stage.clientWidth/w);
+    const b=stage.querySelector(".bounds"),mac=b.firstElementChild;
+    b.style.width=w*scale+"px";b.style.height=h*scale+"px";
+    Object.assign(mac.style,{width:w+"px",height:h+"px",transform:"scale("+scale+")"});
+  });
+}
+function renderAll(){directions.forEach(([id])=>render(id));sizeWindows()}
+document.querySelector(".board").innerHTML=directions.map(([id,title,trade,lead,pick])=>`<section data-variant="${id}" class="variant v${id.toLowerCase()}">
+  <div class="variant-head"><div class="brandline"><span class="variant-letter">${id}</span><h2>${title}</h2></div><p class="variant-tradeoff">${trade}</p></div>
+  <div class="stage"><div class="bounds"><div id="mac-${id}" class="mac"><div class="titlebar" aria-hidden="true"><i class="light"></i><i class="light"></i><i class="light"></i><small>Exercise Timer</small></div><div class="content"></div>
+  <div class="footer" aria-hidden="true"><span>Across the room · F</span><span>Made by Simon at Smoxu</span><span>Sound <i></i></span></div><div class="layer"></div><div class="feedback"></div></div></div></div>
+  <div class="reopen">${action("reopen",icon("repeat","tiny")+"Reopen this app","")}</div><p class="analysis"><b>${lead}</b> ${pick}</p></section>`).join("");
+document.addEventListener("click",event=>{
+  const button=event.target.closest("button");if(!button)return;
+  if(button.dataset.scenario){
+    scenario=button.dataset.scenario;
+    try{localStorage.setItem("exercise-timer-design-scenario",scenario)}catch{}
+    markScenario();
+    renderAll();return;
+  }
+  const key=button.dataset.act,section=button.closest("[data-variant]");if(!key||!section)return;
+  const id=section.dataset.variant,m=getModel(id),r=m.data.routines.find(r=>r.id===button.dataset.id);
+  m.notice="";
+  switch(key){
+    case "reopen":reopen(m);toast(m,"Reopened");break;
+    case "mode":{
+      const preset=button.dataset.mode==="1";
+      if(preset&&!m.draft.preset){m.draft.rest=true;m.draft.rest_duration=5}
+      m.draft.preset=preset;break;
+    }
+    case "toggle":m.draft[button.dataset.key]=!m.draft[button.dataset.key];break;
+    case "start":{
+      const saved=m.draftRecord;
+      const name=saved&&JSON.stringify(saved.config)===JSON.stringify(m.draft)?saved.name:type(m.draft)+" workout";
+      launch(m,{name,config:m.draft});break;
+    }
+    case "repeat":launch(m,m.data.last);break;
+    case "launch":launch(m,r);break;
+    case "selected":launch(m,selected(m));break;
+    case "pick":m.selection=button.dataset.id;break;
+    case "pin":r.pinned=!r.pinned;if(!r.pinned&&m.selection===r.id)m.selection=m.data.last?"last":"draft";remember(m);break;
+    case "edit":m.sheet="edit";break;
+    case "adjust":m.draftRecord=selected(m);m.draft=copy(m.draftRecord.config);m.selection="draft";m.sheet="edit";break;
+    case "save":m.from=m.sheet;m.savedName="";m.sheet="save";break;
+    case "library":m.sheet="library";break;
+    case "close":m.sheet=null;break;
+    case "cancel-save":m.sheet=m.from;break;
+    case "stop":m.running=null;m.selection="last";break;
+    case "skip":{
+      const run=m.running,next=run.phases[++run.index];if(next)run.end=Date.now()+next[1]*1000;break;
+    }
+  }
+  render(id);
+});
+document.addEventListener("submit",event=>{
+  const form=event.target;if(!form.matches("[data-save]"))return;event.preventDefault();
+  const id=form.closest("[data-variant]").dataset.variant,m=getModel(id),name=form.routineName.value.trim();
+  if(!name){form.routineName.setCustomValidity("Enter a routine name.");form.routineName.reportValidity();return}
+  const record={id:"r"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),name,config:copy(m.draft),pinned:form.pinned.checked};
+  m.data.routines.push(record);m.draftRecord=record;remember(m);m.sheet=null;
+  if(id==="C")m.selection=record.pinned?record.id:"draft";
+  toast(m,"Saved "+name);render(id);
+});
+document.addEventListener("input",event=>{
+  const el=event.target;
+  if(el.name==="routineName")el.setCustomValidity("");
+  if(!el.matches("input[data-key]")||el.value===""||!Number.isInteger(el.valueAsNumber)||el.valueAsNumber<Number(el.min)||el.valueAsNumber>Number(el.max))return;
+  const m=getModel(el.closest("[data-variant]").dataset.variant);
+  m.draft[el.dataset.key]=el.valueAsNumber;
+  const pane=el.closest(".panel")||el.closest(".content"),readout=pane.querySelector(".readout");
+  if(readout){readout.querySelector("b").textContent=time(total(m.draft));readout.querySelector("span").textContent=sets(m.draft)+" sets"}
+  const desc=pane.querySelector(".minihero .sub");if(desc)desc.textContent=count(m.draft)+" · "+m.draft.duration+" sec work";
+});
+document.addEventListener("change",event=>{
+  const el=event.target;
+  if(el.id==="window-size"){small=el.value==="min";sizeWindows();return}
+  if(el.matches("input[data-key]")){
+    const m=getModel(el.closest("[data-variant]").dataset.variant);
+    el.value=m.draft[el.dataset.key];
+  }
+});
+document.addEventListener("toggle",e=>{if(e.target.matches?.("details"))getModel(e.target.closest("[data-variant]").dataset.variant).showExercises=e.target.open},true);
+document.addEventListener("keydown",e=>{
+  const section=e.target.closest("[data-variant]");if(!section)return;
+  const id=section.dataset.variant,m=getModel(id);
+  if(e.key==="Escape"){if(m.sheet)m.sheet=m.sheet==="save"?m.from:null;else if(m.running){m.running=null;m.selection="last"}render(id)}
+  if(e.key==="Tab"&&m.sheet){
+    const nodes=[...section.querySelectorAll(".panel button:not(:disabled),.panel input:not(:disabled),.panel summary")],first=nodes[0],last=nodes[nodes.length-1];
+    if(e.shiftKey&&e.target===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&e.target===last){e.preventDefault();first.focus()}
+  }
+});
+setInterval(()=>{
+  for(const [id] of directions){
+    const t=getModel(id).running;if(!t||!t.phases[t.index])continue;
+    while(t.phases[t.index]&&Date.now()>=t.end){const next=t.phases[++t.index];if(next)t.end+=next[1]*1000}
+    const stamp=t.index+"/"+Math.ceil((t.end-Date.now())/1000);
+    if(t.stamp!==stamp){t.stamp=stamp;render(id)}
+  }
+},200);
+markScenario();
+renderAll();
+new ResizeObserver(sizeWindows).observe(document.querySelector(".board"));
+
+document.querySelector("#reset").onclick=()=>{for(const [id] of directions){const m=getModel(id);m.data=initial(scenario==="returning");remember(m);reopen(m)}renderAll()};
+</script></body></html>

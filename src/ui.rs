@@ -1,4 +1,8 @@
 mod room;
+mod shelf;
+
+use crate::routines::{Library, Workout, library_path};
+use shelf::Sheet;
 
 use crate::runtime::{Command, KeepAwake, Runtime};
 use eframe::egui::{
@@ -80,6 +84,10 @@ impl Palette {
 
 pub struct App {
     config: Config,
+    library: Library,
+    draft_routine: Option<Workout>,
+    sheet: Option<Sheet>,
+    saved_notice: Option<std::time::Instant>,
     runtime: Runtime,
     display_awake: KeepAwake,
     muted: bool,
@@ -92,21 +100,55 @@ impl App {
         install_system_fonts(&cc.egui_ctx);
         cc.egui_ctx.set_style_of(Theme::Light, style(false));
         cc.egui_ctx.set_style_of(Theme::Dark, style(true));
+        let library = library_path().and_then(|path| Library::read(&path));
+        let error = library
+            .as_ref()
+            .err()
+            .map(|e| format!("Couldn’t read saved routines. {e}"));
         Self {
+            library: library.unwrap_or_default(),
+            draft_routine: None,
+            sheet: None,
+            saved_notice: None,
             config: Config::default(),
             runtime: Runtime::new(cc.egui_ctx.clone()),
             display_awake: KeepAwake::default(),
             muted: false,
-            error: None,
+            error,
         }
     }
 
     fn start(&mut self) {
-        self.error = self.config.validate().err().map(str::to_owned);
-        if self.error.is_none() {
-            crate::updates::set_workout_active(true);
-            self.runtime.send(Command::Start(self.config.clone()));
+        let name = self
+            .draft_routine
+            .as_ref()
+            .filter(|r| r.config == self.config)
+            .map(|r| r.name.clone())
+            .unwrap_or_else(|| format!("{} workout", shelf::kind(&self.config)));
+        self.start_workout(Workout {
+            name,
+            config: self.config.clone(),
+        });
+    }
+
+    fn start_workout(&mut self, workout: Workout) {
+        if let Err(msg) = workout.config.validate() {
+            self.error = Some(msg.into());
+            return;
         }
+        crate::updates::set_workout_active(true);
+        self.runtime.send(Command::Start(workout.config.clone()));
+        self.sheet = None;
+        self.saved_notice = None;
+        self.persist("remember this workout", |library| {
+            library.last = Some(workout)
+        });
+    }
+
+    fn persist(&mut self, action: &str, edit: impl FnOnce(&mut Library)) -> bool {
+        let result = library_path().and_then(|path| self.library.update(&path, edit));
+        self.error = result.err().map(|e| format!("Couldn’t {action}. {e}"));
+        self.error.is_none()
     }
 
     fn setup(&mut self, ui: &mut egui::Ui) {
@@ -179,10 +221,8 @@ impl App {
                     }
                 });
         }
-        ui.add_space(12.0);
-        if push_button(ui, "Start Workout", Button::Prominent, ui.available_width()).clicked() {
-            self.start();
-        }
+        ui.add_space(3.0);
+        self.shelf_actions(ui);
     }
 
     fn controls(&mut self, ui: &mut egui::Ui, timer: &Timer) {
@@ -221,18 +261,21 @@ impl eframe::App for App {
         if ctx.input_mut(|input| input.consume_key(egui::Modifiers::COMMAND, egui::Key::Q)) {
             ctx.send_viewport_cmd(egui::ViewportCommand::Close);
         }
-        if (fullscreen || !editing || timer.phase != Phase::Ready) && plain_press(ctx, egui::Key::F)
+        if self.sheet.is_none()
+            && (fullscreen || !editing || timer.phase != Phase::Ready)
+            && plain_press(ctx, egui::Key::F)
         {
             ctx.send_viewport_cmd(egui::ViewportCommand::Fullscreen(!fullscreen));
         }
-        if plain_press(ctx, egui::Key::Escape) {
+        if self.sheet.is_none() && plain_press(ctx, egui::Key::Escape) {
             if fullscreen {
                 ctx.send_viewport_cmd(egui::ViewportCommand::Fullscreen(false));
             } else if timer.running() {
                 self.runtime.send(Command::Stop);
             }
         }
-        if !editing
+        if self.sheet.is_none()
+            && !editing
             && ctx.input_mut(|input| input.consume_key(egui::Modifiers::NONE, egui::Key::Enter))
         {
             match timer.phase {
@@ -287,17 +330,15 @@ impl eframe::App for App {
                 title_bar(ui);
                 egui::ScrollArea::vertical().show(ui, |ui| {
                     ui.add_space(8.0);
-                    let ready = timer.phase == Phase::Ready;
-                    let diameter = if ready { 196.0 } else { 260.0 };
-                    if !ready {
-                        let spare = ui.available_height() - diameter - 190.0;
-                        ui.add_space((spare / 2.0).clamp(0.0, 60.0));
-                    }
-                    dial(ui, timer, &self.config, diameter);
-                    ui.add_space(16.0);
-                    if ready {
+                    if timer.phase == Phase::Ready {
+                        self.setup_header(ui, timer);
                         self.setup(ui);
                     } else {
+                        let diameter = 260.0;
+                        let spare = ui.available_height() - diameter - 190.0;
+                        ui.add_space((spare / 2.0).clamp(0.0, 60.0));
+                        dial(ui, timer, &self.config, diameter);
+                        ui.add_space(16.0);
                         caption(ui, timer);
                         ui.add_space(20.0);
                         self.controls(ui, timer);
@@ -319,6 +360,7 @@ impl eframe::App for App {
                     }
                 });
             });
+        self.routine_sheet(ctx);
     }
 }
 
@@ -352,6 +394,13 @@ fn title_bar(ui: &mut egui::Ui) {
         vec2(ui.available_width(), TITLE_BAR_HEIGHT),
         Sense::click_and_drag(),
     );
+    ui.painter().text(
+        response.rect.right_center(),
+        Align2::RIGHT_CENTER,
+        "Exercise Timer",
+        FontId::proportional(11.0),
+        Palette::current(ui).secondary,
+    );
     if response.drag_started() {
         ui.ctx().send_viewport_cmd(egui::ViewportCommand::StartDrag);
     }
@@ -381,7 +430,7 @@ fn dial(ui: &mut egui::Ui, timer: &Timer, config: &Config, diameter: f32) {
     let color = phase_color(&p, timer);
     let (rect, _) = ui.allocate_exact_size(vec2(ui.available_width(), diameter), Sense::hover());
     let painter = ui.painter_at(rect.expand(4.0));
-    let width = (diameter * 0.04).max(6.0);
+    let width = diameter * 0.04;
     let radius = diameter / 2.0 - width / 2.0;
     let center = rect.center();
 
@@ -545,7 +594,7 @@ fn group<R>(ui: &mut egui::Ui, add: impl FnOnce(&mut egui::Ui) -> R) -> R {
 }
 
 fn row(ui: &mut egui::Ui, label: &str, add: impl FnOnce(&mut egui::Ui)) {
-    let size = vec2(ui.available_width(), 40.0);
+    let size = vec2(ui.available_width(), 38.0);
     ui.allocate_ui_with_layout(size, Layout::left_to_right(Align::Center), |ui| {
         ui.set_min_size(size);
         ui.spacing_mut().item_spacing.x = 6.0;
@@ -644,6 +693,9 @@ fn segmented<T: PartialEq + Copy, const N: usize>(
         let cell =
             egui::Rect::from_min_size(rect.min + vec2(segment.x * index as f32, 0.0), segment);
         let response = ui.interact(cell, id.with(index), Sense::click());
+        response.widget_info(|| {
+            egui::WidgetInfo::selected(egui::WidgetType::RadioButton, true, *value == option, label)
+        });
         if response.clicked() {
             *value = option;
         }

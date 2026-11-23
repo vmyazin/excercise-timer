@@ -11,7 +11,7 @@ pub const EXERCISES: [&str; 8] = [
     "Standing hip openers (slow knee circles)",
 ];
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct Config {
     pub sets: u32,
     pub duration: u32,

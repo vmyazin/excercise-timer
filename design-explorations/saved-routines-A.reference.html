@@ -1,0 +1,294 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Setup shelf · Option A</title><style>
+
+    :root {
+      --brand-50: #e1edfb;
+      --brand-100: #c3ddfa;
+      --brand-300: #6583a3;
+      --brand-500: #225892;
+      --brand-700: #173a61;
+      --accent-50: #e6f0ff;
+      --accent-500: #007aff;
+      --accent-700: #155bb0;
+      --ink: #171d24;
+      --ink-soft: #46515d;
+      --ink-mute: #5c6876;
+      --line: #cfd7df;
+      --line-soft: #e4e9ee;
+      --paper: #ffffff;
+      --bg: #f6f8fa;
+      --shadow-sm: 0 1px 2px rgba(20, 16, 70, 0.04), 0 1px 1px rgba(20, 16, 70, 0.02);
+      --shadow-md: 0 4px 24px -8px rgba(20, 16, 70, 0.08), 0 2px 4px rgba(20, 16, 70, 0.03);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.5;
+    }
+
+    .page {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 72px 48px 160px;
+    }
+
+
+    .doc-header {
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 40px;
+      margin-bottom: 80px;
+    }
+    .doc-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--brand-500);
+      background: var(--brand-50);
+      padding: 6px 12px;
+      border-radius: 999px;
+      margin-bottom: 20px;
+    }
+    .doc-eyebrow::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--brand-500);
+    }
+    .doc-title {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 56px;
+      line-height: 1.05;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      margin: 0 0 16px;
+      color: var(--ink);
+    }
+    .doc-subtitle {
+      font-size: 19px;
+      color: var(--ink-soft);
+      max-width: 720px;
+      margin: 0 0 32px;
+      line-height: 1.45;
+    }
+    .doc-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      font-size: 13px;
+      color: var(--ink-mute);
+    }
+    .doc-meta > div { display: flex; gap: 6px; }
+    .doc-meta b {
+      color: var(--ink-soft);
+      font-weight: 600;
+    }
+
+
+    .variant {
+      margin-bottom: 96px;
+    }
+    .variant:last-child { margin-bottom: 0; }
+
+    .variant-head {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      gap: 20px;
+      align-items: start;
+      margin-bottom: 28px;
+    }
+    .variant-letter {
+      width: 48px;
+      height: 48px;
+      border-radius: 999px;
+      background: var(--ink);
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: -0.02em;
+    }
+    .variant-meta h2 {
+      margin: 4px 0 6px;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+    }
+    .variant-tradeoff {
+      font-size: 15px;
+      color: var(--ink-soft);
+      margin: 0;
+      max-width: 760px;
+    }
+    .variant-tradeoff b {
+      color: var(--brand-500);
+      font-weight: 600;
+    }
+
+
+    .preview-frame {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      margin-left: 84px;
+      position: relative;
+    }
+    .preview-frame::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 16px;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #f0e9e0;
+      box-shadow: 18px 0 0 #f0e9e0, 36px 0 0 #f0e9e0;
+      z-index: 2;
+    }
+    .preview-frame-bar {
+      background: #faf9f5;
+      border-bottom: 1px solid var(--line-soft);
+      padding: 14px 16px 14px 76px;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      font-weight: 600;
+    }
+    .preview {
+      padding: 0;
+      min-height: 200px;
+    }
+
+
+    .variant-analysis {
+      margin: 24px 0 0 84px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 24px;
+    }
+    .analysis-block {
+      padding: 18px 20px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--paper);
+    }
+    .analysis-block h4 {
+      margin: 0 0 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brand-500);
+    }
+    .analysis-block.is-risk h4 { color: #b8341f; }
+    .analysis-block.is-pick h4 { color: var(--accent-700); }
+    .analysis-block p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--ink-soft);
+    }
+
+
+    .decision {
+      margin-top: 120px;
+      padding: 40px 48px;
+      background: var(--ink);
+      color: white;
+      border-radius: 20px;
+    }
+    .decision h3 {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 28px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      margin: 0 0 8px;
+    }
+    .decision-sub {
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 14px;
+      margin: 0 0 28px;
+    }
+    .decision-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .decision-cell b {
+      display: block;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brand-100);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .decision-cell span {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.85);
+      line-height: 1.45;
+    }
+
+
+    @media (max-width: 900px) {
+      .page { padding: 40px 20px 80px; }
+      .doc-title { font-size: 36px; }
+      .variant-head { grid-template-columns: 48px 1fr; gap: 12px; }
+      .preview-frame { margin-left: 0; }
+      .variant-analysis { margin-left: 0; grid-template-columns: 1fr; }
+    }
+
+
+  :root{--apple:#007aff;--blue-ink:#075bb9;--green:#28b44b;--orange:#ec8812;--purple:#af52de;--muted:#58616b;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select{font:inherit}button{cursor:pointer;color:inherit}button:focus-visible,input:focus-visible,summary:focus-visible,select:focus-visible{outline:3px solid #3589db;outline-offset:2px}button:disabled{opacity:.45;cursor:default}
+.page{max-width:1520px;padding:22px clamp(16px,3vw,52px) 56px}
+.mast,.brand,.tools,.scenario,.stage-tools,.hrow,.actionbar,.segment,.line,.toolbar,.footer,.library-item,.back,.slot,.side-by,.sheet-title,.brandline{display:flex;align-items:center}
+.mast{justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:14px;color:var(--ink-soft);font-size:12px}.brand{gap:8px;font-weight:650}.brand img{width:26px;height:26px}.mast time,.kicker,.variant-letter,.scale-info{font:11px var(--mono)}.doc-header{margin:0;padding:24px 0 22px;border:0}.doc-title{font-size:clamp(32px,4.2vw,60px);font-weight:600;letter-spacing:-.064em;margin:0 0 8px}.doc-subtitle{font-size:16px;margin:0;max-width:none}
+.tools{justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 0;border-block:1px solid var(--line)}.scenario,.stage-tools{gap:8px;font-size:12px}.scenario>span{font-weight:600;margin-right:2px}.tabs{display:flex;padding:3px;background:#e4e9ee;border-radius:8px}.tabs button{background:transparent;border:0;padding:5px 11px;border-radius:5px;color:#4d5965}.tabs button[aria-pressed=true]{background:#fff;box-shadow:0 1px 3px #142a4525;color:#17283d;font-weight:600}.stage-tools select{padding:4px;border:1px solid #cbd3dc;background:white;border-radius:5px}
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(15px,2vw,36px);margin-top:22px}.variant{min-width:0;margin:0}.variant-head{display:block;margin:0 0 12px}.brandline{gap:8px}.variant-letter{width:25px;height:25px;border-radius:7px;font-size:13px;font-weight:700;background:#1c416b}.variant h2{font-size:clamp(19px,1.65vw,26px);margin:0;letter-spacing:-.045em}.variant-tradeoff{font-size:13px;line-height:1.45;margin-top:5px;min-height:38px}
+.stage{container-type:inline-size}.bounds{margin:auto;position:relative}.mac{position:absolute;top:0;left:0;transform-origin:top left;overflow:hidden;display:flex;flex-direction:column;line-height:1.3;background:#f0f0f0;border:1px solid #b9bfc4;border-radius:13px;box-shadow:0 8px 15px -8px #10253c44,0 1px 2px #12243a1c;font-size:13px;color:#242424}
+.titlebar{height:30px;flex:none;display:flex;align-items:center;padding:0 12px;gap:6px}.light{width:11px;height:11px;border-radius:50%;background:#ff6058;border:1px solid #0001}.light:nth-child(2){background:#ffbd2e}.light:nth-child(3){background:#29c941}.titlebar small{flex:1;text-align:right;color:#656565;font-size:11px}.content{overflow:auto;flex:1;min-height:0;padding:7px 19px 14px;scrollbar-width:thin}.footer{justify-content:space-between;flex:none;border-top:1px solid #d5d5d5;padding:8px 14px;font-size:10px;color:#626262}.footer span{display:flex;align-items:center;gap:4px}.footer i{width:19px;height:11px;border-radius:8px;background:var(--green);position:relative}.footer i:after{content:"";width:8px;height:8px;position:absolute;top:1.5px;right:2px;border-radius:50%;background:white}
+.ico{width:16px;height:16px;display:inline-block;flex:none;vertical-align:-3px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.tiny{width:13px;height:13px}.mac button{border:1px solid transparent;font-weight:550}.mac button:hover:not(:disabled){filter:brightness(.95)}.primary,.plain,.link,.iconbtn,.fav,.biglink,.list-start,.pick,.repeat{display:inline-flex;align-items:center;justify-content:center;gap:6px}.primary,.plain{border-radius:7px;padding:7px 11px}.mac .primary{background:var(--apple);color:white}.mac .plain{background:white;border-color:#cfcfcf;box-shadow:0 1px 1px #0000000a}.link,.iconbtn,.biglink{padding:4px 5px;background:transparent;color:var(--blue-ink);border:0}.iconbtn{width:28px;height:28px;border-radius:6px}.iconbtn[aria-pressed=true]{background:#e5f0fe}.iconbtn[aria-pressed=true] svg{fill:#b4d8ff}.full{width:100%}.section-title{font-size:12px;font-weight:650;color:#565b62;margin:14px 0 6px}.hrow,.toolbar,.sheet-title{justify-content:space-between;gap:8px}.hrow .section-title{margin:0}.hrow{margin:12px 0 5px}
+.group,.library-group{background:#fcfcfc;border:1px solid #dedede;border-radius:8px;overflow:hidden}.line{justify-content:space-between;gap:8px;min-height:39px;margin:0 10px}.line+.line{border-top:1px solid #e2e2e2}.side-by{gap:8px}.segment{padding:2px;border-radius:6px;background:#e5e5e5}.segment button{background:transparent;padding:3px 8px;border-radius:4px;font-size:12px}.segment button[aria-pressed=true]{background:white;box-shadow:0 1px 3px #0002}.field{display:flex;align-items:center;gap:3px}.field input{width:53px;text-align:right;border-radius:4px;border:1px solid #ccc;background:white;padding:2px;color:#222;font-size:12px}.field small{width:16px;color:var(--muted)}.field:has(:disabled){opacity:.42}.switch{width:30px;height:17px;border-radius:12px;background:#aaa;padding:1px;display:flex;align-items:center}.switch[aria-checked=true]{background:var(--green);justify-content:flex-end}.switch i{display:block;width:13px;height:13px;border-radius:100%;background:white;box-shadow:0 1px 2px #0003}.exercises{font-size:12px;margin:5px;color:#575757}.exercises summary{cursor:pointer}.exercises ol{padding-left:20px}.actionbar{gap:7px;margin-top:10px}.actionbar .primary{flex:1}.muted,.sub{color:var(--muted)}.sub{font-size:11px;margin:3px 0 0}.main-name,.library-item strong,.pick strong,.recent-head,.fav span{overflow-wrap:anywhere}
+.dial{--d:156px;--phase:var(--apple);--progress:100%;width:var(--d);height:var(--d);flex:none;position:relative;display:grid;place-items:center;border-radius:50%;background:conic-gradient(var(--phase) var(--progress),#d9d9d9 0);isolation:isolate}.dial:before{content:"";position:absolute;inset:calc(var(--d)*.04);background:var(--surface,#f0f0f0);border-radius:50%;z-index:-1}.readout{display:grid;text-align:center;align-content:center;gap:1px}.readout small{font-size:12px;color:#5b6269}.readout b{font:500 calc(var(--d)*.225)/1.12 var(--mono);letter-spacing:-.08em}.readout span{font-size:11px;color:#626970}.main-name{margin:4px 0;font-size:22px;line-height:1.15;letter-spacing:-.045em}.kicker{text-transform:uppercase;letter-spacing:.1em;color:#576773;font-size:10px}.minihero{display:flex;align-items:center;gap:17px;padding:4px 0 5px}.minihero .dial{--d:115px}.minihero .sub{font-size:12px}.minihero .readout b{font-size:26px}
+.shelf{border-top:1px solid #d2d2d2;margin-top:15px}.quick-row{display:flex;align-items:center;gap:8px;padding:8px 10px;width:100%;text-align:left;border-radius:6px;background:#fafafa}.quick-row .iconbox{width:26px;height:26px;background:#e5effa;border-radius:6px;display:grid;place-items:center;color:var(--blue-ink)}.quick-row .tail{margin-left:auto;color:var(--blue-ink)}.quick-row strong{display:block;font-size:12px}.chips{display:flex;gap:6px;flex-wrap:wrap;margin:7px 0}.mac .fav{background:#fafafa;border-color:#d3d8dd;border-radius:6px;font-size:12px;padding:5px 8px;color:#214c79;max-width:100%}
+.library-heading{font-size:29px;letter-spacing:-.055em;margin:0}.toolbar{margin:3px 0 13px}.recent{padding:16px;border-radius:12px;background:#e0ebf8;border:1px solid #c2d6ed}.recent .kicker{color:#275784}.recent-head{font-size:22px;letter-spacing:-.045em;margin:7px 0}.recent .side-by{justify-content:space-between}.recent .primary{margin-top:12px}.wave{display:flex;align-items:flex-end;gap:3px;height:30px}.wave i{width:5px;border-radius:3px;background:#3882c8;height:27px}.wave i:first-child{height:10px;background:#d78823}.library-item{gap:8px;padding:9px 8px}.library-item+.library-item{border-top:1px solid #dedede}.list-start{flex:1;min-width:0;justify-content:flex-start;text-align:left;background:transparent;padding:0}.list-start>span:last-child{min-width:0}.list-start strong,.pick strong{font-size:13px;display:block}.glyph{width:32px;height:34px;border-radius:7px;display:grid;place-items:center;background:#e5eef8;color:#2367ad;flex:none}.glyph.body{background:#eae6f8;color:#69509c}.library-item .play{color:var(--blue-ink)}.empty{margin:8px 0 0;border:1px dashed #c5cbd2;border-radius:8px;color:#57616c;padding:12px;font-size:12px}
+.focus-head{text-align:center;margin:6px 0 10px}.focus-head .main-name{font-size:25px}.vc .focus-dial{--d:196px;margin:0 auto}.vc .dial-action{margin:15px auto 5px;display:flex;min-width:175px}.vc .adjust{display:flex;margin:0 auto}.picker{display:grid;gap:5px;margin-top:5px}.pick{width:100%;text-align:left;padding:7px 8px;justify-content:flex-start;background:#fafafa;border-radius:7px}.mac .pick[aria-pressed=true]{background:#e2edfa;border-color:#b5cee9}.pick .mark{margin-left:auto;color:var(--blue-ink)}.pick .glyph{width:26px;height:27px}.vc .pick .sub{font-size:10px}
+.sheet{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#1d293d38;padding:16px;z-index:4}.panel{width:100%;max-height:92%;overflow:auto;padding:16px;background:#f5f5f6;border-radius:12px;box-shadow:0 10px 36px #12223848;border:1px solid #bec4cc}.sheet-title{margin-bottom:13px}.sheet-title h3{font-size:18px;letter-spacing:-.035em;margin:0}.panel label.name{display:block;font-weight:600;margin:14px 0 4px}.panel input.name{width:100%;border:1px solid #b5bbc4;border-radius:6px;padding:8px;background:#fff}.panel .actionbar{justify-content:flex-end}.panel .actionbar .primary{flex:0 0 auto}.check{display:flex;align-items:center;gap:4px;margin:10px 0 20px}.panel .dial{--d:100px;--surface:#f5f5f6;margin:0 auto 10px}.saved-summary{padding:8px 10px;border-radius:6px;background:#e7ecf1;color:#405368;font-size:12px}.back{gap:2px;padding-left:0}.run{text-align:center;padding-top:30px}.run .dial{--d:240px;margin:0 auto 23px}.run h3{margin:4px 0;font-size:20px}.run .actionbar{margin-top:25px}.run .actionbar button{flex:1}.run .stop{color:#b42a24}.reopen{display:flex;justify-content:center;margin:11px 0}.reopen button{display:inline-flex;align-items:center;gap:5px;background:transparent;border:0;color:#40566d;font-size:12px;padding:4px}.analysis{border-top:1px solid var(--line);padding:11px 0 0;font-size:13px;color:var(--ink-soft);margin:0}.analysis b{color:var(--ink)}.decision{margin:25px 0 0;padding:21px 25px;border-radius:12px;background:#193951}.decision h3{font-size:21px;font-weight:600}.decision p{margin:4px 0 0;font-size:14px;max-width:950px;color:#e4eff6}.note{font-size:12px;color:var(--ink-mute);margin:13px 0 0}.toast{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);background:#27343e;color:white;padding:7px 10px;border-radius:7px;max-width:90%;font-size:12px;z-index:5;text-align:center;pointer-events:none}.sr{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media(max-width:980px){.board{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:25px}.variant-tradeoff{min-height:38px}}@media(max-width:650px){.board{grid-template-columns:1fr}.page{padding:15px 16px 38px}.variant-tradeoff{min-height:0}.variant{max-width:450px;width:100%;margin:0 auto}.tools{gap:8px}.decision{margin-top:22px}.doc-subtitle{font-size:14px}.mast time{font-size:10px}}
+.pair{display:flex;flex-wrap:wrap;gap:24px;padding:20px}.bounds{width:420px;height:640px}.mac{transform:none!important}</style><main class="pair"><section><h2>Returning user</h2><div class="bounds"><div  class="mac" style="width: 420px; height: 640px; transform: scale(1);"><div class="titlebar" aria-hidden="true"><i class="light"></i><i class="light"></i><i class="light"></i><small>Exercise Timer</small></div><div class="content"><div class="minihero"><div class="dial " style=""><div class="readout"><small>Total</small><b>02:40</b><span>5 sets</span></div></div><div><span class="kicker">Current setup</span><h3 class="main-name">Custom workout</h3><div class="sub">5 sets · 30 sec work</div></div></div><div class="group"><div class="line"><span>Workout</span><div class="side-by"><div class="segment"><button type="button" data-act="mode" class="" data-mode="0" aria-pressed="true">Custom</button><button type="button" data-act="mode" class="" data-mode="1" aria-pressed="false">Bodyweight</button></div></div></div>
+  <div class="line"><span>Sets</span><div class="side-by"><span class="field"><input type="number" aria-label="Sets" data-key="sets" min="1" max="20" step="1" value="5" style=""></span></div></div>
+  <div class="line"><span>Work duration</span><div class="side-by"><span class="field"><input type="number" aria-label="Work duration in seconds" data-key="duration" min="5" max="300" step="5" value="30" style=""><small>sec</small></span></div></div>
+  <div class="line"><span>Warm-up</span><div class="side-by"><button type="button" data-act="toggle" class="switch" role="switch" aria-label="Warm-up" aria-checked="true" data-key="warm_up"><i></i></button><span class="field"><input type="number" aria-label="Warm-up seconds" data-key="warm_up_duration" min="5" max="30" step="5" value="10" style=""><small>sec</small></span></div></div>
+  <div class="line"><span>Rest between sets</span><div class="side-by"><button type="button" data-act="toggle" class="switch" role="switch" aria-label="Rest between sets" aria-checked="false" data-key="rest"><i></i></button><span class="field"><input type="number" aria-label="Rest seconds" data-key="rest_duration" min="5" max="60" step="5" value="5" disabled="" style=""><small>sec</small></span></div></div>
+  </div><div class="actionbar"><button type="button" data-act="save" class="plain"><svg aria-hidden="true" class="ico " viewBox="0 0 20 20"><path d="M5 3h10v14l-5-3-5 3z"></path></svg>Save routine…</button><button type="button" data-act="start" class="primary"><svg aria-hidden="true" class="ico " viewBox="0 0 20 20"><path d="m6 3.4 10 6.6-10 6.6z" fill="currentColor" stroke="none"></path></svg>Start Workout</button></div>
+  <div class="shelf"><div class="hrow"><span class="section-title">Quick start</span><button type="button" data-act="library" class="link"><svg aria-hidden="true" class="ico tiny" viewBox="0 0 20 20"><path d="M7 5h10M7 10h10M7 15h10M3 5h.1M3 10h.1M3 15h.1"></path></svg>Saved routines</button></div>
+  <button type="button" data-act="repeat" class="quick-row"><span class="iconbox"><svg aria-hidden="true" class="ico " viewBox="0 0 20 20"><path d="M4 8a6.5 6.5 0 1 1-.2 5m-.3-9v4.5H8"></path></svg></span><span><strong>Repeat last workout</strong><span class="sub">Custom workout · 02:40</span></span><span class="tail"><svg aria-hidden="true" class="ico " viewBox="0 0 20 20"><path d="m6 3.4 10 6.6-10 6.6z" fill="currentColor" stroke="none"></path></svg></span></button>
+  <div class="chips"><button type="button" data-act="launch" class="fav" data-id="circuit" aria-label="Start pinned Morning circuit"><svg aria-hidden="true" class="ico tiny" viewBox="0 0 20 20"><path d="m11 3 6 6-2 1-2 4-3-1-5 5m4-6-3-3 4-2z"></path></svg><span>Morning circuit</span><svg aria-hidden="true" class="ico tiny" viewBox="0 0 20 20"><path d="m6 3.4 10 6.6-10 6.6z" fill="currentColor" stroke="none"></path></svg></button></div></div></div>
+  <div class="footer" aria-hidden="true"><span>Across the room · F</span><span>Made by Simon at Smoxu</span><span>Sound <i></i></span></div><div class="layer"></div><div class="feedback"></div></div></div></section><section><h2>First launch</h2><div class="bounds"><div  class="mac" style="width: 420px; height: 640px; transform: scale(1);"><div class="titlebar" aria-hidden="true"><i class="light"></i><i class="light"></i><i class="light"></i><small>Exercise Timer</small></div><div class="content"><div class="minihero"><div class="dial " style=""><div class="readout"><small>Total</small><b>02:40</b><span>5 sets</span></div></div><div><span class="kicker">Current setup</span><h3 class="main-name">Custom workout</h3><div class="sub">5 sets · 30 sec work</div></div></div><div class="group"><div class="line"><span>Workout</span><div class="side-by"><div class="segment"><button type="button" data-act="mode" class="" data-mode="0" aria-pressed="true">Custom</button><button type="button" data-act="mode" class="" data-mode="1" aria-pressed="false">Bodyweight</button></div></div></div>
+  <div class="line"><span>Sets</span><div class="side-by"><span class="field"><input type="number" aria-label="Sets" data-key="sets" min="1" max="20" step="1" value="5" style=""></span></div></div>
+  <div class="line"><span>Work duration</span><div class="side-by"><span class="field"><input type="number" aria-label="Work duration in seconds" data-key="duration" min="5" max="300" step="5" value="30" style=""><small>sec</small></span></div></div>
+  <div class="line"><span>Warm-up</span><div class="side-by"><button type="button" data-act="toggle" class="switch" role="switch" aria-label="Warm-up" aria-checked="true" data-key="warm_up"><i></i></button><span class="field"><input type="number" aria-label="Warm-up seconds" data-key="warm_up_duration" min="5" max="30" step="5" value="10" style=""><small>sec</small></span></div></div>
+  <div class="line"><span>Rest between sets</span><div class="side-by"><button type="button" data-act="toggle" class="switch" role="switch" aria-label="Rest between sets" aria-checked="false" data-key="rest"><i></i></button><span class="field"><input type="number" aria-label="Rest seconds" data-key="rest_duration" min="5" max="60" step="5" value="5" disabled="" style=""><small>sec</small></span></div></div>
+  </div><div class="actionbar"><button type="button" data-act="save" class="plain"><svg aria-hidden="true" class="ico " viewBox="0 0 20 20"><path d="M5 3h10v14l-5-3-5 3z"></path></svg>Save routine…</button><button type="button" data-act="start" class="primary"><svg aria-hidden="true" class="ico " viewBox="0 0 20 20"><path d="m6 3.4 10 6.6-10 6.6z" fill="currentColor" stroke="none"></path></svg>Start Workout</button></div>
+  <div class="shelf"><div class="hrow"><span class="section-title">Quick start</span><button type="button" data-act="library" class="link"><svg aria-hidden="true" class="ico tiny" viewBox="0 0 20 20"><path d="M7 5h10M7 10h10M7 15h10M3 5h.1M3 10h.1M3 15h.1"></path></svg>Saved routines</button></div>
+  <p class="empty">Start a workout once to repeat it here.</p>
+  </div></div>
+  <div class="footer" aria-hidden="true"><span>Across the room · F</span><span>Made by Simon at Smoxu</span><span>Sound <i></i></span></div><div class="layer"></div><div class="feedback"></div></div></div></section></main></html>

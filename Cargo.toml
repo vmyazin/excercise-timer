@@ -1,6 +1,6 @@
 [package]
 name = "exercise-timer"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2024"
 rust-version = "1.92"
 description = "An offline interval workout timer for macOS"
@@ -14,6 +14,9 @@ updater = []
 cc = "1"
 
 [dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tempfile = "3"
 eframe = { version = "0.33", default-features = false, features = ["accesskit", "default_fonts", "wgpu"] }
 rodio = { version = "0.21", default-features = false, features = ["playback"] }
 # eframe with default features disabled does not select a native GPU backend.

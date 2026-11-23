@@ -5,6 +5,7 @@ A standalone Rust interval timer for macOS 12 or newer. The interface uses egui/
 - Custom workouts: 1–20 sets, 5–300 seconds per set.
 - Optional warm-up (5–30 seconds) and rest between sets (5–60 seconds).
 - Eight-exercise bodyweight preset with exercise names and a preview.
+- Save a Custom or Bodyweight setup by name. Pin it for one-click starts from the setup screen, or repeat your last workout after reopening.
 - Audible 3–2–1 countdown, interval chime, completion melody, and a mute control.
 - Full-screen across-the-room mode with a large countdown, current and upcoming movements, and set numbers.
 - Timer and audio continue while minimized. Active workouts prevent idle system sleep. Avoid explicit system sleep during a workout; closing the app discards the session.
@@ -29,7 +30,7 @@ cargo clippy --locked --all-targets -- -D warnings
 cargo test --locked --all-targets
 ```
 
-Settings are session-only, matching the original app. Without an audio device the visual timer still works, and the interface reports that sound is unavailable.
+Saved routines, pins, and the last started workout are stored locally. Repeat starts the saved intervals from the beginning. Without an audio device the visual timer still works, and the interface reports that sound is unavailable.
 
 ## Package for macOS
 
